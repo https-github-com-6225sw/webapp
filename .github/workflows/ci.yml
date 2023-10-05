@@ -25,7 +25,7 @@ jobs:
         image: mariadb
         env:
           MYSQL_DATABASE: csye6225sw
-          MYSQL_ROOT_PASSWORD: Wsj13191867198
+          MYSQL_ROOT_PASSWORD: Wsj1319186719
         ports: 
           - 3306:3306
     
