@@ -21,11 +21,12 @@ jobs:
 
     services:
       mysql:
-        image:mariadb
+        image: mariadb
         env:
           MYSQL_DATABASE: csye6225sw
           MYSQL_ROOT_PASSWORD: Wsj13191867198
-        ports: 3306:3306
+        ports: 
+          - 3306:3306
     
 
     steps:
