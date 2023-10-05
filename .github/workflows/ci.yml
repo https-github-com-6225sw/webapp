@@ -42,7 +42,8 @@ jobs:
       run: mvn -B package --file pom.xml
       
     - name: Run the HealthCheckTest
-      run: ./mvnw clean verify
+      run: |
+        ./mvnw clean verify
     
 
     # # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
