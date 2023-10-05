@@ -15,7 +15,7 @@ on:
     branches: [ "AssignmentUser" ]
 
 jobs:
-  build:
+  build-and-test:
     name: WebappCheck
 
     runs-on: ubuntu-latest
