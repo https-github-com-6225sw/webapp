@@ -3,7 +3,7 @@ package com.csye6225.cloudwebapp;
 import com.csye6225.cloudwebapp.CloudwebappApplication;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +39,8 @@ public class DatabaseHealthControllerIT {
 
         HttpStatusCode result = response.getStatusCode();
         //JSONAssert.assertEquals(expected, response.getBody(), false);
-        //assertEquals(result.value(), 200);
-        assertThat(result.value()).isEqualTo(200);
+        assertEquals(result.value(), 200);
+        //assertThat(result.value()).isEqualTo(200);
     }
 
     private String createURLWithPort(String uri) {
