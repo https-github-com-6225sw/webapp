@@ -45,7 +45,7 @@ jobs:
     - name: checkout repo
       uses: actions/checkout@v3
     - name: Copy csv file
-      run: sudo cp user.csv /usr/local/opt
+      run: sudo cp users.csv /usr/local/opt
       
     - name: Run the HealthCheckTest
       run: mvn verify -X
