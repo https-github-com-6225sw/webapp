@@ -41,6 +41,9 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
+    - name: Copy csv file
+      run: sudo cp user.csv /usr/local/opt
       
     - name: Run the HealthCheckTest
       run: mvn verify -X
