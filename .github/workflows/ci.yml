@@ -43,7 +43,8 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Copy csv file
-      run: sudo cp webapp/user.csv /usr/local/opt
+      uses: actions/setup-java@v3
+      run: sudo cp user.csv /usr/local/opt
       
     - name: Run the HealthCheckTest
       run: mvn verify -X
