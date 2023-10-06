@@ -20,15 +20,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mariadb
-        env:
-          # MYSQL_ROOT_HOST: 172.18.0.1
-          MYSQL_DATABASE: csye6225sw
-          MYSQL_ROOT_PASSWORD: Wsj13191867918
-        ports: 
-          - 3306:3306
+    # services:
+    #   mysql:
+    #     image: mariadb
+    #     env:
+    #       # MYSQL_ROOT_HOST: 172.18.0.1
+    #       MYSQL_DATABASE: csye6225sw
+    #       MYSQL_ROOT_PASSWORD: Wsj13191867918
+    #     ports: 
+    #       - 3306:3306
     
 
     steps:
