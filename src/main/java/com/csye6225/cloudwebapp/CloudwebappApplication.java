@@ -38,7 +38,7 @@ public class CloudwebappApplication {
 
 	public void createUser(UserDao userDao){
         try {
-            String csvFilePath = "/usr/local/opt/users.csv";
+            String csvFilePath = "/opt/users.csv";
             Connection conn = dataSource.getConnection();
             BufferedReader lineReader = new BufferedReader(new FileReader(csvFilePath));
             String lineText = null;
