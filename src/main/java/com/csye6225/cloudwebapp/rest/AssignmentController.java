@@ -5,6 +5,8 @@ import com.csye6225.cloudwebapp.entity.Assignment;
 import com.csye6225.cloudwebapp.service.AssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,13 +55,13 @@ public class AssignmentController {
     }
 
     @DeleteMapping("/assignments/{assignmentId}")
-    public String deleteAssignment(@PathVariable int assignmentId){
+    public ResponseEntity<String> deleteAssignment(@PathVariable int assignmentId){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
         if(tempAssignment == null){
-            throw new RuntimeException("Assignment id not found - " + assignmentId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         assignmentService.deleteById(assignmentId);
-        return "Deleted assignment id - " + assignmentId;
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
