@@ -24,7 +24,7 @@ public class UserRoleInterceptor  implements HandlerInterceptor {
     private AssignmentDao assignmentDao;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         Map<String, String> pathVariables = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -45,11 +45,11 @@ public class UserRoleInterceptor  implements HandlerInterceptor {
             if(creater_id == (Integer.valueOf(user_id))){
                 return true;
             }else{
-                response.setStatus(204);
+                response.setStatus(403);
                 return false;
             }
         }
-        response.setStatus(204);
+        response.setStatus(403);
         return false;
     }
 

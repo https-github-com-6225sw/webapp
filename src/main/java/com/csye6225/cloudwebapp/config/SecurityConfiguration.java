@@ -15,47 +15,28 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
-import static jakarta.servlet.DispatcherType.ERROR;
-import static jakarta.servlet.DispatcherType.FORWARD;
 
 @Configuration
 public class SecurityConfiguration {
 
     @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource){
-        JdbcUserDetailsManager jdbcUserDetailsManager =  new JdbcUserDetailsManager(dataSource);
-
-        jdbcUserDetailsManager
-                .setUsersByUsernameQuery("SELECT email, password, enabled from users where email=?");
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "select email, role from users where email=?");
-        return jdbcUserDetailsManager;
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        //http.httpBasic(Customizer.withDefaults());
-
+     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/healthz", "/swagger-ui/**",
-                        "/v3/api-docs/**").permitAll());
-
-
+                        "/v3/api-docs/**","v1/**","v1/**/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v1/assignments").authenticated()
-//                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/v1/assignments/*").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/*").permitAll());
-                       // .requestMatchers(HttpMethod.POST, "/v1/assignments").hasRole("USER"));
+                        .requestMatchers(HttpMethod.GET, "/v1/assignments").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/v1/assignments").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/v1/assignments").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").hasRole("USER"));
 
 
+        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
-        http.csrf(csrf -> csrf.disable());
+
         return http.build();
     }
-
-
-
-
 }
