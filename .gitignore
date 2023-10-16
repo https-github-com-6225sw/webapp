@@ -9,6 +9,17 @@ output/
 **/*.iml
 *.ipr
 *.iws
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 mvnw.cmd
 mvnw
 # OSX
@@ -16,6 +27,11 @@ mvnw
 .AppleDouble
 .LSOverride
 
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 ## Java
 # either the 3rd party diff or IDEA:
 *.java.orig
