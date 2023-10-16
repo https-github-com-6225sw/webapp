@@ -15,8 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
+import static jakarta.servlet.DispatcherType.ERROR;
+import static jakarta.servlet.DispatcherType.FORWARD;
+
 @Configuration
-@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
@@ -32,24 +34,28 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf -> csrf.disable());
+        //http.httpBasic(Customizer.withDefaults());
+
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/healthz", "/swagger-ui/**",
-                        "/v3/api-docs/**","v1/**","v1/**/**").permitAll());
+                        "/v3/api-docs/**").permitAll());
+
+
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").hasRole("USER"));
+                        .requestMatchers(HttpMethod.GET, "/v1/assignments").authenticated()
+//                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/v1/assignments/*").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/*").permitAll());
+                       // .requestMatchers(HttpMethod.POST, "/v1/assignments").hasRole("USER"));
 
 
-        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
-
+        http.csrf(csrf -> csrf.disable());
         return http.build();
     }
+
+
 
 
 }
