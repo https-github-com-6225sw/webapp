@@ -68,7 +68,7 @@ build {
   ]
 
   provisioner "shell" {
-    script = "pre-install.sh"
+    script = "csye6225_packer/pre-install.sh"
   }
   
 }

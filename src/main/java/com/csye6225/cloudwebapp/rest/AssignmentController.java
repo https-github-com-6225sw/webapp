@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +31,7 @@ public class AssignmentController {
     @GetMapping("/assignments/{assignmentId}")
     public Assignment getAssignment(@PathVariable int assignmentId){
         Assignment theAssignment = assignmentService.findById(assignmentId);
+
         if(theAssignment == null){
             throw new RuntimeException("assignment Id not found - " + assignmentId);
         }
@@ -60,19 +60,8 @@ public class AssignmentController {
         try {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }catch (BadCredentialsException e){
-        return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
-    }}
-
-    @PatchMapping("/v1/assignment/{name}")
-    public ResponseEntity<?> handlePatch() {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("PATCH is not allowed for this resource.");
-    }
-
-    @PatchMapping("/v1/assignment")
-    public ResponseEntity<?> handlePatchBase() {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("PATCH is not allowed for this resource.");
-    }
-
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }}
     @DeleteMapping("/assignments/{assignmentId}")
     public ResponseEntity<String> deleteAssignment(@PathVariable int assignmentId){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
@@ -81,6 +70,7 @@ public class AssignmentController {
         }
         assignmentService.deleteById(assignmentId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
 }
