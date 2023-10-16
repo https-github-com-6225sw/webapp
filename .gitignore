@@ -9,8 +9,8 @@ output/
 **/*.iml
 *.ipr
 *.iws
-
-
+mvnw.cmd
+mvnw
 # OSX
 .DS_Store
 .AppleDouble
@@ -24,6 +24,7 @@ output/
 **/build/libs/*.jar
 *.war
 *.ear
+
 
 #Gradle
 .gradle
