@@ -45,11 +45,11 @@ public class UserRoleInterceptor  implements HandlerInterceptor {
             if(creater_id == (Integer.valueOf(user_id))){
                 return true;
             }else{
-                response.setStatus(403);
+                response.setStatus(204);
                 return false;
             }
         }
-        response.setStatus(403);
+        response.setStatus(204);
         return false;
     }
 
