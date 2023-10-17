@@ -83,6 +83,9 @@ jobs:
       with:
           name: webappArtifact
           path: artifact/
+    - name: List directory contents
+      run: ls -al
+    
           
     # - name: Display structure of downloaded files
     #   run: ls -R
