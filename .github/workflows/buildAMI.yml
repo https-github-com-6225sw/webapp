@@ -38,17 +38,27 @@ jobs:
 
     - name: Build and package project
       run: mvn -f pom.xml clean package
+
+    - name: Move artifact to /artifact directory
+      run: |
+        mv target/cloudwebapp-0.0.1-SNAPSHOT.jar artifact/
+    - name: Commit and push artifact
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add artifact/cloudwebapp-0.0.1-SNAPSHOT.jar
+        git commit -m "Add built artifact" || echo "No changes to commit"
+        git push
+      
     - name: Show contents of the current working directory
       run: ls -la
     - name: Show contents of the target directory
-
-
       run: ls -la target
-    - name: Upload Maven build artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: webappArtifact
-        path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
+    # - name: Upload Maven build artifact
+    #   uses: actions/upload-artifact@v1
+    #   with:
+    #     name: webappArtifact
+    #     path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
         
     # - name: Copy file from target to artifact
     #   run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
@@ -69,11 +79,11 @@ jobs:
       with:
         version: "latest"
 
-    - name: Download math result for job 1
-      uses: actions/download-artifact@v3
-      with:
-          name: webappArtifact
-          path: webapp/artifact
+    # - name: Download math result for job 1
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #       name: webappArtifact
+    #       path: webapp/artifact
           
     - name: Display structure of downloaded files
       run: ls -R
