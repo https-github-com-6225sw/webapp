@@ -54,6 +54,7 @@ jobs:
     #   run: ls -la artifact
 
   packer:
+    needs: build-and-test
     name: Build AMI
     runs-on: ubuntu-latest
     steps:
