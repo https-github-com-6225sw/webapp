@@ -1,0 +1,47 @@
+name: Build Packer AMI
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: WebappCheck
+
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mariadb
+        env:
+          # MYSQL_ROOT_HOST: 172.18.0.1
+          MYSQL_DATABASE: csye6225sw
+          MYSQL_ROOT_PASSWORD: Wsj13191867918
+        ports: 
+          - 3306:3306
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: checkout repo
+      uses: actions/checkout@v3
+    - name: Copy csv file
+      run: sudo cp users.csv /opt
+      
+    - name: Run the HealthCheckTest
+      run: mvn verify -X
+
+    - name: Build and package project
+      run: mvn -f pom.xml clean package
+    - name: Show contents of the current working directory
+      run: ls -la
+    - name: Show contents of the target directory
+      run: ls -la artifact
+ 
+    
