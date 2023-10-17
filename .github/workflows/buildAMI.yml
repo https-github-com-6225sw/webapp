@@ -70,7 +70,6 @@ jobs:
     name: Build AMI
     runs-on: ubuntu-latest
     steps:
-
     - name: Checkout
       uses: actions/checkout@v3
     - name: Setup `packer`
@@ -85,9 +84,9 @@ jobs:
     #       name: webappArtifact
     #       path: webapp/artifact
           
-    - name: Display structure of downloaded files
-      run: ls -R
-      working-directory: ./artifact
+    # - name: Display structure of downloaded files
+    #   run: ls -R
+    #   working-directory: ./artifact
         
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -96,16 +95,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
         aws-region: us-east-1
 
-    - name: checkout repo
-      uses: actions/checkout@v3
     - name: Run `packer init`
       id: init
       run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
-
-    - name: checkout repo
-      uses: actions/checkout@v3
-    - name: Show contents of the artifact directory
-      run: ls -la artifact
+      
     - name: Build Artifact
       run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
   
