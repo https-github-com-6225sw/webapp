@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-test:
-    name: WebappCheck
+    name: Test and Packaging WebApp
 
     runs-on: ubuntu-latest
 
@@ -43,5 +43,24 @@ jobs:
       run: ls -la
     - name: Show contents of the target directory
       run: ls -la target
+    - name: Copy file from target to artifact
+      run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
+  
+    - name: Setup `packer`
+      uses: hashicorp/setup-packer@main
+      id: setup
+      with:
+        version: lastest
+
+    - name: Run `packer init`
+      id: init
+      run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
+
+    - name: Build Artifact
+      run: "packer build -color=false -on-error=abort ./csye6225_packer/assign5-AMI.pkr.hcl"
+  
+
+  
+    
  
     
