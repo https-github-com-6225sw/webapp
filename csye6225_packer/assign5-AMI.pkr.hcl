@@ -68,8 +68,13 @@ build {
   ]
 
   provisioner "shell" {
-    script = "csye6225_packer/pre-install.sh"
+    script = "./csye6225_packer/pre-install.sh"
   }
   
+  provisioner "file" {
+    source = "./artifact"
+    destination = "/opt"
+
+}
 }
 
