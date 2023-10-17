@@ -63,6 +63,10 @@ jobs:
       id: init
       run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
 
+    - name: checkout repo
+      uses: actions/checkout@v3
+    - name: Show contents of the artifact directory
+      run: ls -la artifact
     - name: Build Artifact
       run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
   
