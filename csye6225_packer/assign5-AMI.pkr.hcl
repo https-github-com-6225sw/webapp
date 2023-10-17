@@ -72,9 +72,9 @@ build {
   }
   
 
-  provisioner "shell" {
-    inline = ["sudo cp ./csye6225_packer/* /opt"]
-
+  provisioner "file" {
+    source = "../artifact"
+    destination = "home/admin"
 }
 }
 
