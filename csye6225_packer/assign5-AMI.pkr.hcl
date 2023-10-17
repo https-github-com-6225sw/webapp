@@ -73,7 +73,7 @@ build {
   
 
   provisioner "shell" {
-    inline = ["sudo cp ./artifact/* /opt"]
+    inline = ["sudo cp ./csye6225_packer /opt"]
 
 }
 }
