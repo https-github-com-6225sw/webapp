@@ -78,7 +78,7 @@ build {
 }
 provisioner "file" {
     source = "users.csv"
-    destination = "/home/admin/opt"
+    destination = "/home/admin/opt/users.csv"
 }
 }
 
