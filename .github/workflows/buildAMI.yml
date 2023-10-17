@@ -45,30 +45,34 @@ jobs:
       run: ls -la target
     - name: Copy file from target to artifact
       run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
-  
-    - name: Setup `packer`
-      uses: hashicorp/setup-packer@main
-      id: setup
-      with:
-        version: latest
-        
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-        aws-region: us-east-1
-
-    - name: Run `packer init`
-      id: init
-      run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
-
-    - name: checkout repo
-      uses: actions/checkout@v3
     - name: Show contents of the artifact directory
       run: ls -la artifact
-    - name: Build Artifact
-      run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
+
+
+  
+    # - name: Setup `packer`
+    #   uses: hashicorp/setup-packer@main
+    #   id: setup
+    #   with:
+    #     version: latest
+        
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+    #     aws-region: us-east-1
+
+    # - name: Run `packer init`
+    #   id: init
+    #   run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
+
+    # - name: checkout repo
+    #   uses: actions/checkout@v3
+    # - name: Show contents of the artifact directory
+    #   run: ls -la artifact
+    # - name: Build Artifact
+    #   run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
   
 
   
