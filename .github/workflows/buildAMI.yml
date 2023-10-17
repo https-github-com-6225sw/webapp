@@ -41,7 +41,7 @@ jobs:
 
     - name: Move artifact to /artifact directory
       run: |
-        mv target/cloudwebapp-0.0.1-SNAPSHOT.jar artifact/
+        mv target/cloudwebapp-0.0.1-SNAPSHOT.jar csye6225_packer/
     - name: Commit and push artifact
       run: |
         git config --local user.email "action@github.com"
