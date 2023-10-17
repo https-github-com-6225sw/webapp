@@ -46,7 +46,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add artifact/cloudwebapp-0.0.1-SNAPSHOT.jar
+        git add ./csye6225_packer/cloudwebapp-0.0.1-SNAPSHOT.jar
         git commit -m "Add built artifact" || echo "No changes to commit"
         git push
       
@@ -84,7 +84,7 @@ jobs:
     #       name: webappArtifact
     #       path: artifact/
     - name: List directory contents
-      run: ls -la artifact
+      run: ls -la csye6225_packer
     
           
     # - name: Display structure of downloaded files
