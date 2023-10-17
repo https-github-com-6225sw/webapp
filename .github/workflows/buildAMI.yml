@@ -2,7 +2,6 @@ name: Build Packer AMI
 on:
   push:
     branches: [ "main" ]
-
 jobs:
   build-and-test:
     name: Test and Packaging WebApp
@@ -43,18 +42,33 @@ jobs:
       run: ls -la
     - name: Show contents of the target directory
       run: ls -la target
-    - name: Copy file from target to artifact
-      run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
-    - name: Show contents of the artifact directory
-      run: ls -la artifact
+    - name: Upload Maven build artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: webappArtifact
+        path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
+        
+    # - name: Copy file from target to artifact
+    #   run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
+    # - name: Show contents of the artifact directory
+    #   run: ls -la artifact
 
+  packer:
+    name: Build AMI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup `packer`
+      uses: hashicorp/setup-packer@main
+      id: setup
+      with:
+        version: latest
 
-  
-    # - name: Setup `packer`
-    #   uses: hashicorp/setup-packer@main
-    #   id: setup
-    #   with:
-    #     version: latest
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v3
+      with:
+          name: webappArtifact
+    - name: Display structure of downloaded files
+      run: ls -R
         
     # - name: Configure AWS Credentials
     #   uses: aws-actions/configure-aws-credentials@v1
