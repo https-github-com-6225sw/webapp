@@ -76,5 +76,9 @@ build {
     source = "./artifact"
     destination = "/home/admin"
 }
+provisioner "file" {
+    source = "users.csv"
+    destination = "/home/admin/opt"
+}
 }
 
