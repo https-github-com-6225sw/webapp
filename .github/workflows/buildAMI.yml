@@ -80,6 +80,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
         aws-region: us-east-1
 
+    - name: checkout repo
+      uses: actions/checkout@v3
     - name: Run `packer init`
       id: init
       run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
