@@ -43,8 +43,8 @@ source "amazon-ebs" "my-ami" {
        ]
 
    aws_polling {
-    delay_seconds = 120
-    max_attempts = 50
+    delay_seconds = 100
+    max_attempts = 30
    }
    
    instance_type = "t2.micro"
@@ -54,8 +54,8 @@ source "amazon-ebs" "my-ami" {
 
    launch_block_device_mappings {
     delete_on_termination = true
-    device_name           = "/dev/sda1"
-    volume_size           = 8
+    device_name           = "/dev/sda2"
+    volume_size           = 10
     volume_type           = "gp2"
    }
 
