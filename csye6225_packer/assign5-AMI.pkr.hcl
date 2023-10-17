@@ -73,7 +73,7 @@ build {
   
 
   provisioner "file" {
-    source = "../artifact"
+    source = "./artifact"
     destination = "home/admin"
 }
 }
