@@ -64,7 +64,7 @@ jobs:
       run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
 
     - name: Build Artifact
-      run: "packer build -color=false -on-error=abort ./csye6225_packer/assign5-AMI.pkr.hcl"
+      run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
   
 
   
