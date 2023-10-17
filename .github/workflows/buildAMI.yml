@@ -68,8 +68,10 @@ jobs:
       uses: actions/download-artifact@v3
       with:
           name: webappArtifact
+          path: webapp/artifact
     - name: Display structure of downloaded files
       run: ls -R
+      working-directory: webapp/artifact
         
     # - name: Configure AWS Credentials
     #   uses: aws-actions/configure-aws-credentials@v1
