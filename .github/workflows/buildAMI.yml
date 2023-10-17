@@ -2,10 +2,10 @@ name: Build Packer AMI
 on:
   push:
     branches: [ "main" ]
+
 jobs:
   build-and-test:
     name: Test and Packaging WebApp
-
     runs-on: ubuntu-latest
 
     services:
@@ -41,6 +41,8 @@ jobs:
     - name: Show contents of the current working directory
       run: ls -la
     - name: Show contents of the target directory
+
+
       run: ls -la target
     - name: Upload Maven build artifact
       uses: actions/upload-artifact@v1
@@ -99,6 +101,6 @@ jobs:
   
 
   
-    
+
  
     

@@ -71,6 +71,7 @@ build {
     script = "./csye6225_packer/pre-install.sh"
   }
   
+
   provisioner "shell" {
     inline = ["sudo cp ./artifact /opt"]
 
