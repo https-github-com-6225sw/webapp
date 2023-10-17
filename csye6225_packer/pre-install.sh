@@ -7,6 +7,7 @@ sudo apt -y install mariadb-server
 echo "secure_installation"
 sudo mysql_secure_installation <<EOF
 
+n
 y
 Wsj13191867918
 Wsj13191867918
