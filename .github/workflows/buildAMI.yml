@@ -42,6 +42,6 @@ jobs:
     - name: Show contents of the current working directory
       run: ls -la
     - name: Show contents of the target directory
-      run: ls -la artifact
+      run: ls -la target
  
     
