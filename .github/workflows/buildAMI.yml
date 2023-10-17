@@ -46,6 +46,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git pull
         git add ./csye6225_packer/cloudwebapp-0.0.1-SNAPSHOT.jar
         git commit -m "Add built artifact" || echo "No changes to commit"
         git push
