@@ -18,25 +18,33 @@ import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfiguration {
+    @Bean
+    public UserDetailsManager userDetailsManager(DataSource dataSource){
+        JdbcUserDetailsManager jdbcUserDetailsManager =  new JdbcUserDetailsManager(dataSource);
+        jdbcUserDetailsManager
+                .setUsersByUsernameQuery("SELECT email, password, enabled from users where email=?");
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
+                "select email, role from users where email=?");
+        return jdbcUserDetailsManager;
+    }
 
     @Bean
      public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/healthz", "/swagger-ui/**",
-                        "/v3/api-docs/**","v1/**","v1/**/**").permitAll());
+                        "/v3/api-docs/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/assignments").hasRole("USER")
-                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").hasRole("USER"));
+                        .requestMatchers(HttpMethod.GET, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").permitAll());
 
 
-        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+       // http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
-
+        http.csrf(csrf -> csrf.disable());
         return http.build();
     }
 }
