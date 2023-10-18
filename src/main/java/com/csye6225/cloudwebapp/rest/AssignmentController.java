@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -45,24 +46,26 @@ public class AssignmentController {
     @GetMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> getAssignment(@PathVariable String assignmentId){
         Assignment theAssignment = assignmentService.findById(assignmentId);
-        AssignmentVO assignmentVO = new AssignmentVO();
-        BeanUtils.copyProperties(theAssignment, assignmentVO);
         if(theAssignment == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        AssignmentVO assignmentVO = new AssignmentVO();
+        BeanUtils.copyProperties(theAssignment, assignmentVO);
         return new ResponseEntity<>(assignmentVO, HttpStatus.OK);
     }
 
     @PostMapping("/assignments")
-    public ResponseEntity<Object> addAssignment(@RequestBody Assignment theAssignment){
-//        theAssignment.setId(0);
+    public ResponseEntity<Object> addAssignment(@RequestBody Assignment theAssignment, Authentication authentication){
         theAssignment.setAssignmentCreated(LocalDateTime.now());
         theAssignment.setAssignmentUpdated(LocalDateTime.now());
-        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().trim().length() == 0
-        | String.valueOf(theAssignment.getPoints()) == null | String.valueOf(theAssignment.getNumOfAttemps()) == null){
+        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
+        | String.valueOf(theAssignment.getPoints()) == null | String.valueOf(theAssignment.getNumOfAttemps()) == null |
+                theAssignment.getUser() != null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         else if(theAssignment.getPoints() <= 10 & theAssignment.getPoints() >= 1 ){
+        String username = authentication.getName();
+        theAssignment.setUser(username);
         Assignment dbAssignment = assignmentService.save(theAssignment);
         AssignmentVO assignmentVO = new AssignmentVO();
         BeanUtils.copyProperties(theAssignment, assignmentVO);
@@ -72,10 +75,28 @@ public class AssignmentController {
     }
 
     @PutMapping("/assignments/{assignmentId}")
-    public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId){
+    public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId, Authentication authentication){
+        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName() == null
+                | String.valueOf(theAssignment.getPoints()) == null | String.valueOf(theAssignment.getNumOfAttemps()) == null |
+                theAssignment.getUser() != null | theAssignment.getPoints() > 10 |theAssignment.getPoints() < 0){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        else if(!havePermission(authentication.getName(), assignmentId)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Assignment preAssignment = assignmentService.findById(assignmentId);
+        if(preAssignment == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        theAssignment.setId(preAssignment.getId());
+        preAssignment.setPoints(theAssignment.getPoints());
+        preAssignment.setName(theAssignment.getName());
+        preAssignment.setNumOfAttemps(theAssignment.getNumOfAttemps());
 
-        Assignment dbAssignment = assignmentService.save(theAssignment);
-        return new ResponseEntity<>(HttpStatus.OK);
+        preAssignment.setDeadline(theAssignment.getDeadline());
+        preAssignment.setAssignmentUpdated(LocalDateTime.now());
+        assignmentService.save(preAssignment);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/assignments/{assignmentId}")
@@ -86,14 +107,26 @@ public class AssignmentController {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
     @DeleteMapping("/assignments/{assignmentId}")
-    public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId){
+    public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
         if(tempAssignment == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if(!havePermission(authentication.getName(), assignmentId)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         assignmentService.deleteById(assignmentId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
+    }
+
+    public boolean havePermission(String username, String assignID){
+        //find creatername by assignID
+        Assignment assignment = assignmentService.findById(assignID);
+        if(username.equals(assignment.getUser())){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -37,7 +37,7 @@ public class SecurityConfiguration {
                 configurer
                         .requestMatchers(HttpMethod.GET, "/v1/assignments/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v1/assignments/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/v1/assignments").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").permitAll());
 
