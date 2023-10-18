@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                         "/v3/api-docs/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/assignments/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/v1/assignments").authenticated()
                         .requestMatchers(HttpMethod.POST, "/v1/assignments").authenticated()
