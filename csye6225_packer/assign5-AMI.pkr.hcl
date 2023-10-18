@@ -40,7 +40,7 @@ source "amazon-ebs" "my-ami" {
        
   ami_users = [
     "603808807036",
-       ]
+      "099917940770", ]
 
    aws_polling {
     delay_seconds = 100
