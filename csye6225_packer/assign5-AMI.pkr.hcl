@@ -80,5 +80,9 @@ provisioner "file" {
     source = "./opt"
     destination = "/home/admin"
 }
+provisioner "shell" {
+  inline = ["sudo mv /home/admin/opt/users.csv /opt"]
+}
+
 }
 
