@@ -1,6 +1,8 @@
 package com.csye6225.cloudwebapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,20 +14,25 @@ import java.time.LocalDateTime;
 public class Assignment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID )
     @Column(name="id")
-    private int id;
+    private String id;
 
     @Column(name="name")
+    @NotNull
+    @NotBlank
     private String name;
 
     @Column(name="points")
+    @NotBlank
     private int points;
 
     @Column(name="num_of_attemps")
+    @NotBlank
     private int numOfAttemps;
 
     @Column(name="deadline")
+    @NotBlank
     private LocalDateTime deadline;
 
     @CreationTimestamp

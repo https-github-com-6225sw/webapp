@@ -1,0 +1,112 @@
+name: Build Packer AMI
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Test and Packaging WebApp
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mariadb
+        env:
+          # MYSQL_ROOT_HOST: 172.18.0.1
+          MYSQL_DATABASE: csye6225sw
+          MYSQL_ROOT_PASSWORD: Wsj13191867918
+        ports: 
+          - 3306:3306
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: checkout repo
+      uses: actions/checkout@v3
+    - name: Copy csv file
+      run: sudo cp users.csv /opt
+      
+    - name: Run the HealthCheckTest
+      run: mvn verify -X
+
+    - name: Build and package project
+      run: mvn -f pom.xml clean package
+
+    # - name: Move artifact to /artifact directory
+    #   run: |
+    #     mv target/cloudwebapp-0.0.1-SNAPSHOT.jar artifact/
+    # - name: Commit and push artifact
+    #   run: |
+    #     git config --local user.email "action@github.com"
+    #     git config --local user.name "GitHub Action"
+    #     git pull
+    #     git add ./csye6225_packer/cloudwebapp-0.0.1-SNAPSHOT.jar
+    #     git commit -m "Add built artifact" || echo "No changes to commit"
+    #     git push
+      
+    # - name: Show contents of the current working directory
+    #   run: ls -la
+    # - name: Show contents of the target directory
+    #   run: ls -la target
+    - name: Upload Maven build artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: webappArtifact
+        path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
+        
+    # - name: Copy file from target to artifact
+    #   run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
+    # - name: Show contents of the artifact directory
+    #   run: ls -la artifact
+
+  packer:
+    needs: build-and-test
+    name: Build AMI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup `packer`
+      uses: hashicorp/setup-packer@main
+      id: setup
+      with:
+        version: "latest"
+
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v3
+      with:
+          name: webappArtifact
+          path: artifact/
+    - name: List directory contents
+      run: ls -la artifact
+      
+    # - name: Display structure of downloaded files
+    #   run: ls -R
+    #   working-directory: ./artifact
+        
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+        aws-region: us-east-1
+
+    - name: Run `packer init`
+      id: init
+      run: "packer init ./csye6225_packer/assign5-AMI.pkr.hcl"
+      
+    - name: Build Artifact
+      run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
+  
+
+  
+
+ 
+    

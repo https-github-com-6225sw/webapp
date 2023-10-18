@@ -22,12 +22,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(new ParamInterceptor())
                 .addPathPatterns("/healthz", "/v1/**", "/v1/**/**");
         //.excludePathPatterns("");
-        registry.addInterceptor(new BodyInterceptor())
-                .addPathPatterns("/healthz");
-        registry.addInterceptor(userRoleInterceptor())
-                .addPathPatterns("/v1/assignments/{assignmentId}")
-                .excludePathPatterns("/v1/assignments");
-        registry.addInterceptor(new PatchInterceptor())
-                .addPathPatterns("/v1/assignments/{assignmentId}");
+      
+//        registry.addInterceptor(new BodyInterceptor())
+//                .addPathPatterns("/healthz");
+//        registry.addInterceptor(userRoleInterceptor())
+//                .addPathPatterns("/v1/assignments/{assignmentId}")
+//                .excludePathPatterns("/v1/assignments");
+//        registry.addInterceptor(new PatchInterceptor())
+//                .addPathPatterns("/v1/assignments/{assignmentId}");
+
     }
 }

@@ -3,10 +3,14 @@ package com.csye6225.cloudwebapp.rest;
 import com.csye6225.cloudwebapp.dao.AssignmentDao;
 import com.csye6225.cloudwebapp.entity.Assignment;
 import com.csye6225.cloudwebapp.service.AssignmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +20,11 @@ import java.util.List;
 public class AssignmentController {
 
     private AssignmentService assignmentService;
-
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
     @Autowired
     private AssignmentController(AssignmentService theAssignmentService){
         assignmentService = theAssignmentService;
@@ -38,8 +46,8 @@ public class AssignmentController {
     }
 
     @PostMapping("/assignments")
-    public Assignment addAssignment(@RequestBody Assignment theAssignment) throws Exception {
-        theAssignment.setId(0);
+    public Assignment addAssignment(@Valid @RequestBody Assignment theAssignment) throws Exception {
+//        theAssignment.setId(0);
         if(theAssignment.getPoints() <= 10 & theAssignment.getPoints() >= 1){
         Assignment dbAssignment = assignmentService.save(theAssignment);
         return dbAssignment;
@@ -49,11 +57,18 @@ public class AssignmentController {
     }
 
     @PutMapping("/assignments/{assignmentId}")
-    public Assignment updateAssignment(@RequestBody Assignment theAssignment, @PathVariable int assignmentId){
+    public Assignment updateAssignment(@Valid @RequestBody Assignment theAssignment, @PathVariable int assignmentId){
         Assignment dbAssignment = assignmentService.save(theAssignment);
         return dbAssignment;
     }
 
+    @PatchMapping("/assignments/{assignmentId}")
+    public ResponseEntity<String> partialUpdate(@PathVariable int assignmentId){
+        try {
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }catch (BadCredentialsException e){
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }}
     @DeleteMapping("/assignments/{assignmentId}")
     public ResponseEntity<String> deleteAssignment(@PathVariable int assignmentId){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
@@ -62,6 +77,7 @@ public class AssignmentController {
         }
         assignmentService.deleteById(assignmentId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
 }
