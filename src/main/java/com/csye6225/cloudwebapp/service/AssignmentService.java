@@ -7,9 +7,9 @@ import java.util.List;
 public interface AssignmentService {
     List<Assignment> findAll();
 
-    Assignment findById(int theId);
+    Assignment findById(String theId);
 
     Assignment save(Assignment theAssignment);
 
-    void deleteById(int theId);
+    void deleteById(String theId);
 }

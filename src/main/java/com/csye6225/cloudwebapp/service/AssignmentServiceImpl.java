@@ -25,7 +25,7 @@ public class AssignmentServiceImpl implements AssignmentService{
     }
 
     @Override
-    public Assignment findById(int theId) {
+    public Assignment findById(String theId) {
         return assignmentDao.findById(theId);
     }
 
@@ -37,7 +37,7 @@ public class AssignmentServiceImpl implements AssignmentService{
 
     @Transactional
     @Override
-    public void deleteById(int theId) {
+    public void deleteById(String theId) {
         assignmentDao.deleteById(theId);
     }
 }
