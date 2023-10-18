@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`users` (
 -- Table `csye62252`.`assignment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `csye6225sw`.`assignment` (
-                                                         `id` INT NOT NULL AUTO_INCREMENT,
+                                                         `id` VARCHAR(225) NOT NULL,
                                                          `name` VARCHAR(45) NOT NULL,
     `points` INT NOT NULL,
     `num_of_attemps` INT NOT NULL,

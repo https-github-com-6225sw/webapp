@@ -27,7 +27,7 @@ public class AssignmentDaoImpl implements AssignmentDao{
     }
 
     @Override
-    public Assignment findById(int theId) {
+    public Assignment findById(String theId) {
         Assignment theAssignment = entityManager.find(Assignment.class, theId);
         return theAssignment;
     }
@@ -39,7 +39,7 @@ public class AssignmentDaoImpl implements AssignmentDao{
     }
 
     @Override
-    public void deleteById(int theId) {
+    public void deleteById(String theId) {
         Assignment theAssignment = entityManager.find(Assignment.class, theId);
         entityManager.remove(theAssignment);
     }

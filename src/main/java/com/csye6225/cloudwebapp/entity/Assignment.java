@@ -19,20 +19,20 @@ public class Assignment {
     private String id;
 
     @Column(name="name")
-    @NotNull
-    @NotBlank
+//    @NotNull
+//   @NotBlank
     private String name;
 
     @Column(name="points")
-    @NotBlank
+//    @NotNull
     private int points;
 
     @Column(name="num_of_attemps")
-    @NotBlank
+//    @NotNull
     private int numOfAttemps;
 
     @Column(name="deadline")
-    @NotBlank
+//    @NotNull
     private LocalDateTime deadline;
 
     @CreationTimestamp

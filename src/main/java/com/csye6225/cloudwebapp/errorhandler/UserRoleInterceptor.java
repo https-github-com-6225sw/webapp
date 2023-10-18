@@ -36,7 +36,7 @@ public class UserRoleInterceptor  implements HandlerInterceptor {
         System.out.println("Assignment want to delete - " + ass_id);
 
         //get creater id according to pathVariable
-        Assignment assignment = assignmentDao.findById(Integer.valueOf(ass_id));
+        Assignment assignment = assignmentDao.findById(String.valueOf(ass_id));
         int creater_id = assignment.getUser();
         System.out.println("creater Id according to pathVariable - " + creater_id);
         if (!user.isEmpty()){
