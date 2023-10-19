@@ -47,7 +47,7 @@ public class Assignment {
 //    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
 //                          CascadeType.DETACH, CascadeType.REFRESH})
     @Column(name="user_id")
-    private int user;
+    private String user;
 
 
 
