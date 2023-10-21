@@ -66,10 +66,10 @@ build {
   sources = [
     "source.amazon-ebs.my-ami",
   ]
-}
+
   provisioner "shell" {
     script = "./csye6225_packer/pre-install.sh"
-  
+  }
   
 
   provisioner "file" {
