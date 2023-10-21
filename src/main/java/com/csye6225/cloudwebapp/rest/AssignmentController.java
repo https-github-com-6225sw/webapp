@@ -12,9 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-
 import org.springframework.security.core.Authentication;
-
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
@@ -49,7 +47,6 @@ public class AssignmentController {
     @GetMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> getAssignment(@PathVariable String assignmentId){
         Assignment theAssignment = assignmentService.findById(assignmentId);
-
         if(theAssignment == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
