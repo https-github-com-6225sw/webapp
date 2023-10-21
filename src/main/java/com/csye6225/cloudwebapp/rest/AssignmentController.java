@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,7 @@ public class AssignmentController {
         preAssignment.setAssignmentUpdated(LocalDateTime.now());
         assignmentService.save(preAssignment);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
     @PatchMapping("/assignments/{assignmentId}")
@@ -107,6 +109,7 @@ public class AssignmentController {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
     @DeleteMapping("/assignments/{assignmentId}")
+
     public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
         if(tempAssignment == null){
