@@ -63,7 +63,7 @@ source "amazon-ebs" "my-ami" {
 
 
 build {
-  sources = [
+      sources = [
     "source.amazon-ebs.my-ami",
   ]
 
