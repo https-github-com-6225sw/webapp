@@ -17,6 +17,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: Wsj13191867918
         ports: 
           - 3306:3306
+    env:
+      DATABASE_URL: ${{vars.DATABASE_URL}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+      DATABASE_USER: ${{vars.DATABASE_USER}}
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -39,32 +44,11 @@ jobs:
     - name: Build and package project
       run: mvn -f pom.xml clean package
 
-    # - name: Move artifact to /artifact directory
-    #   run: |
-    #     mv target/cloudwebapp-0.0.1-SNAPSHOT.jar artifact/
-    # - name: Commit and push artifact
-    #   run: |
-    #     git config --local user.email "action@github.com"
-    #     git config --local user.name "GitHub Action"
-    #     git pull
-    #     git add ./csye6225_packer/cloudwebapp-0.0.1-SNAPSHOT.jar
-    #     git commit -m "Add built artifact" || echo "No changes to commit"
-    #     git push
-      
-    # - name: Show contents of the current working directory
-    #   run: ls -la
-    # - name: Show contents of the target directory
-    #   run: ls -la target
     - name: Upload Maven build artifact
       uses: actions/upload-artifact@v1
       with:
         name: webappArtifact
         path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
-        
-    # - name: Copy file from target to artifact
-    #   run: sudo cp ./target/cloudwebapp-0.0.1-SNAPSHOT.jar ./artifact
-    # - name: Show contents of the artifact directory
-    #   run: ls -la artifact
 
   packer:
     needs: build-and-test
@@ -86,10 +70,6 @@ jobs:
           path: artifact/
     - name: List directory contents
       run: ls -la artifact
-      
-    # - name: Display structure of downloaded files
-    #   run: ls -R
-    #   working-directory: ./artifact
         
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
