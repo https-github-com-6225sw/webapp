@@ -70,6 +70,7 @@ jobs:
           path: artifact/
     - name: List directory contents
       run: ls -la artifact
+
         
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
