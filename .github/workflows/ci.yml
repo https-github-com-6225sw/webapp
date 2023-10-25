@@ -24,10 +24,13 @@ jobs:
         env:
           # MYSQL_ROOT_HOST: 172.18.0.1
           MYSQL_DATABASE: csye6225sw
-          MYSQL_ROOT_PASSWORD: Wsj13191867918
+          MYSQL_ROOT_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
         ports: 
           - 3306:3306
-    
+    env:
+      DATABASE_URL: ${{vars.DATABASE_URL}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+      DATABASE_USER: ${{vars.DATABASE_USER}}
 
     steps:
     - uses: actions/checkout@v3
