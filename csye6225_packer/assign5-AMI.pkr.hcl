@@ -83,7 +83,7 @@ build {
 }
 
   provisioner "shell" {
-    script = ["./csye6225_packer/pre-install.sh",
+    scripts = ["./csye6225_packer/pre-install.sh",
       "./csye6225_packer/service.sh",]
   }
 
