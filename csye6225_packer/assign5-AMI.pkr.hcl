@@ -85,9 +85,17 @@ build {
   }
 
   provisioner "shell" {
+    inline = [
+      "sudo groupadd csye6225",
+      "sudo useradd -s /bin/false -g csye6225 -d /opt/csye6225 -m csye6225",
+    ]
+  }
+
+  provisioner "shell" {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
       "sudo mv /home/admin/opt/app.service /etc/systemd/system",
-      "mkdir /opt/csye6225/artifact",
+      "sudo -u csye6225 mkdir /opt/csye6225/artifact",
+      "sudo chown -R csye6225:csye6225 /opt/csye6225",
       "sudo mv /home/admin/artifact /opt/csye6225/artifact",
     ]
 }
@@ -96,9 +104,6 @@ build {
       "./csye6225_packer/service.sh",]
   }
 
-  provisioner "shell" {
-    inline = ["sudo chown -R csye6225:csye6225 /opt/csye6225",]
-  }
 
 }
 
