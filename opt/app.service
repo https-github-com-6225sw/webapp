@@ -1,10 +1,12 @@
 [Unit]
 Description=My CSYE 6225 App
-Requires=network.target
+ConditionPathExists=/opt/artifact/cloudwebapp-0.0.1-SNAPSHOT.jar
 After=cloud-final.service
 
 [Service]
 Type=simple
+User=csye6225
+Group=csye6225
 EnvironmentFile=/etc/systemd/system/service.env
 WorkingDirectory=/opt/artifact
 ExecStart=/usr/bin/java -jar cloudwebapp-0.0.1-SNAPSHOT.jar
