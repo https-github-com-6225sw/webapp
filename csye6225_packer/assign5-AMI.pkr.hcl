@@ -67,6 +67,11 @@ build {
     "source.amazon-ebs.my-ami",
   ]
 
+  provisioner "shell" {
+    scripts = ["./csye6225_packer/pre-install.sh",
+      "./csye6225_packer/service.sh",]
+  }
+
   provisioner "file" {
     source = "./artifact"
     destination = "/home/admin"
@@ -77,15 +82,11 @@ build {
   }
 
   provisioner "shell" {
-    inline = ["sudo mv /home/admin/opt/users.csv /opt",
+    inline = ["sudo mv /home/csye6225/opt/users.csv /opt",
     "sudo mv /home/admin/opt/app.service /etc/systemd/system",
-    "sudo mv /home/admin/artifact /opt/",]
+    "sudo mv /home/admin/artifact /opt/csye6225",]
 }
 
-  provisioner "shell" {
-    scripts = ["./csye6225_packer/pre-install.sh",
-      "./csye6225_packer/service.sh",]
-  }
 
 }
 
