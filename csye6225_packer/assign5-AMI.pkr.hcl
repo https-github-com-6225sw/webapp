@@ -27,7 +27,15 @@ variable "subnet_id"{
     default = "subnet-092bbfc0bd41e12f2"
 }
 
+variable "dev_id"{
+  type = string
+  default = "603808807036"
+}
 
+variable "demo_id"{
+  type = string
+  default = "099917940770"
+}
 
 source "amazon-ebs" "my-ami" {
   ami_name      = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
@@ -39,8 +47,8 @@ source "amazon-ebs" "my-ami" {
     "us-east-1",]
        
   ami_users = [
-    "603808807036",
-      "099917940770", ]
+    "${var.dev_id}",
+    "${var.demo_id}", ]
 
    aws_polling {
     delay_seconds = 100
@@ -79,7 +87,8 @@ build {
   provisioner "shell" {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
     "sudo mv /home/admin/opt/app.service /etc/systemd/system",
-    "sudo mv /home/admin/artifact /opt/csye6225",]
+    "sudo mv /home/admin/artifact/ /opt/csye6225/",
+    "sudo chown -R csye6225:csye6225 /opt/csye6225",]
 }
   provisioner "shell" {
     scripts = ["./csye6225_packer/pre-install.sh",
