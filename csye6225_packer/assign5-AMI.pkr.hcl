@@ -86,8 +86,9 @@ build {
 
   provisioner "shell" {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
-    "sudo mv /home/admin/opt/app.service /etc/systemd/system",
-    "sudo mv /home/admin/artifact /opt/csye6225/artifact",
+      "sudo mv /home/admin/opt/app.service /etc/systemd/system",
+      "mkdir /opt/csye6225/artifact",
+      "sudo mv /home/admin/artifact /opt/csye6225/artifact",
     ]
 }
   provisioner "shell" {
