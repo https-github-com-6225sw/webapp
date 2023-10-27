@@ -88,11 +88,15 @@ build {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
     "sudo mv /home/admin/opt/app.service /etc/systemd/system",
     "sudo mv /home/admin/artifact/ /opt/csye6225/",
-    "sudo chown -R csye6225:csye6225 /opt/csye6225",]
+    ]
 }
   provisioner "shell" {
     scripts = ["./csye6225_packer/pre-install.sh",
       "./csye6225_packer/service.sh",]
+  }
+
+  provisioner "shell" {
+    inline = ["sudo chown -R csye6225:csye6225 /opt/csye6225",]
   }
 
 }
