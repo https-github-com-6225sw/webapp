@@ -109,7 +109,6 @@ public class AssignmentController {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
     @DeleteMapping("/assignments/{assignmentId}")
-
     public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication){
         Assignment tempAssignment = assignmentService.findById(assignmentId);
         if(tempAssignment == null){

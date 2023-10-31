@@ -71,7 +71,6 @@ build {
     script = "./csye6225_packer/pre-install.sh"
   }
 
-
   provisioner "file" {
     source = "./artifact"
     destination = "/home/admin"
