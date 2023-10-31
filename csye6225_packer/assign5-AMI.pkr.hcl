@@ -84,6 +84,7 @@ provisioner "shell" {
   inline = ["sudo mv /home/admin/opt/users.csv /opt",
   "sudo mv /home/admin/opt/app.service /etc/systemd/system",
   "sudo mv /home/admin/artifact /opt/",]
+
 }
 
 }
