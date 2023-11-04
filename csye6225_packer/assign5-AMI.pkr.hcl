@@ -93,6 +93,7 @@ build {
 
   provisioner "shell" {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
+      "sudo mv /home/admin/opt/amazon-cloudwatch-config.json /opt",
       "sudo mv /home/admin/opt/app.service /etc/systemd/system",
       "sudo chown -R csye6225:csye6225 /opt/csye6225",
       "sudo mv /home/admin/artifact /opt/csye6225/",
@@ -101,6 +102,12 @@ build {
   provisioner "shell" {
     scripts = ["./csye6225_packer/pre-install.sh",
       "./csye6225_packer/service.sh",]
+  }
+
+  provisioner "shell" {
+    scripts = [
+      "./csye6225_packer/cloudwatch.sh",
+    ]
   }
 
 

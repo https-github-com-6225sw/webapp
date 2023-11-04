@@ -2,6 +2,8 @@ package com.csye6225.cloudwebapp;
 
 import com.csye6225.cloudwebapp.dao.UserDao;
 import com.csye6225.cloudwebapp.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +27,10 @@ public class CloudwebappApplication {
 	@Autowired
 	DataSource dataSource;
 
+    static Logger logger = LoggerFactory.getLogger(CloudwebappApplication.class);
+
 	public static void main(String[] args) {
+        logger.info("\n#################Application running####################\n");
 		SpringApplication.run(CloudwebappApplication.class, args);
 	}
 
