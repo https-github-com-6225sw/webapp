@@ -2,8 +2,7 @@ package com.csye6225.cloudwebapp;
 
 import com.csye6225.cloudwebapp.dao.UserDao;
 import com.csye6225.cloudwebapp.entity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 
@@ -26,11 +26,11 @@ public class CloudwebappApplication {
 
 	@Autowired
 	DataSource dataSource;
+    static Logger logger
+            = Logger.getLogger(
+            CloudwebappApplication.class.getName());
 
-    static Logger logger = LoggerFactory.getLogger(CloudwebappApplication.class);
-
-	public static void main(String[] args) {
-        logger.info("\n#################Application running####################\n");
+    public static void main(String[] args) {
 		SpringApplication.run(CloudwebappApplication.class, args);
 	}
 
@@ -42,6 +42,7 @@ public class CloudwebappApplication {
 	}
 
 	public void createUser(UserDao userDao){
+        logger.info("\n#################Application running####################\n");
         try {
             String csvFilePath = "/opt/users.csv";
             //String csvFilePath = "/usr/local/opt/users.csv";
@@ -64,6 +65,7 @@ public class CloudwebappApplication {
                     String hashPassword = new BCryptPasswordEncoder().encode(data[3]);
                     newuser.setPassword("{bcrypt}" + hashPassword);
                     userDao.save(newuser);
+                    logger.info("Saved user. Generated id: " + newuser.getId());
                     System.out.println("Saved user. Generated id: " + newuser.getId());
                 }
             }

@@ -31,7 +31,7 @@ public class SecurityConfiguration {
     @Bean
      public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/healthz", "/swagger-ui/**",
+                .requestMatchers("/healthz", "/", "/swagger-ui/**",
                         "/v3/api-docs/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer

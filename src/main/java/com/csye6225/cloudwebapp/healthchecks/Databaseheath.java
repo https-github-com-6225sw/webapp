@@ -26,6 +26,12 @@ public class Databaseheath {
 
     Logger logger = LoggerFactory.getLogger(Databaseheath.class);
 
+
+    @GetMapping(value="/")
+    public ResponseEntity<String> initPage(){
+        return new ResponseEntity<>("Web Application on EC2 Instance", HttpStatus.OK);
+    }
+
     @GetMapping(value="/healthz")
     public ResponseEntity<String> databaseHealth() {
         HttpHeaders responseHeaders = new HttpHeaders();

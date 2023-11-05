@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public class AssignmentVO {
     private String id;
     private String name;
-    private int points;
-    private int numOfAttemps;
+    private String points;
+    private String numOfAttemps;
     private LocalDateTime deadline;
 
     @CreationTimestamp
