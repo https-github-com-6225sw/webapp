@@ -95,9 +95,9 @@ build {
     inline = ["sudo mv /home/admin/opt/users.csv /opt",
       "sudo mv /home/admin/opt/amazon-cloudwatch-config.json /opt",
       "sudo mv /home/admin/opt/app.service /etc/systemd/system",
+      "sudo mkdir /opt/csye6225/logs",
       "sudo chown -R csye6225:csye6225 /opt/csye6225",
       "sudo mv /home/admin/artifact /opt/csye6225/",
-      "sudo mkdir /opt/csye6225/logs",
     ]
 }
   provisioner "shell" {

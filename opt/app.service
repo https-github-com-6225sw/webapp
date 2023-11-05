@@ -9,7 +9,7 @@ User=csye6225
 Group=csye6225
 EnvironmentFile=/etc/systemd/system/service.env
 WorkingDirectory=/opt/csye6225/artifact
-ExecStart=/usr/bin/java -jar cloudwebapp-0.0.1-SNAPSHOT.jar > /opt/csye6225/logs/csye6225webapp.log 2> /opt/csye6225/logs/csye6225webapp.log
+ExecStart=/usr/bin/java -jar cloudwebapp-0.0.1-SNAPSHOT.jar
 Restart=always
 RestartSec=3
 
