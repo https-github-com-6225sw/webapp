@@ -4,7 +4,10 @@ import com.csye6225.cloudwebapp.VO.AssignmentVO;
 import com.csye6225.cloudwebapp.dao.AssignmentDao;
 import com.csye6225.cloudwebapp.entity.Assignment;
 import com.csye6225.cloudwebapp.service.AssignmentService;
+import com.timgroup.statsd.StatsDClient;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -13,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +25,18 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/v1")
 public class AssignmentController {
 
     private AssignmentService assignmentService;
+
+    @Autowired
+    private StatsDClient statsd;
+
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
@@ -39,54 +47,88 @@ public class AssignmentController {
         assignmentService = theAssignmentService;
     }
 
+    Logger logger = LoggerFactory.getLogger(AssignmentController.class);
+
     @GetMapping("/assignments")
     public List<Assignment> findAll(){
+        statsd.incrementCounter("getallassignments");
+        logger.info("Get All assignment ----" + "get all assignment");
         return assignmentService.findAll();
     }
 
     @GetMapping("/assignments/{assignmentId}")
-    public ResponseEntity<Object> getAssignment(@PathVariable String assignmentId){
+    public ResponseEntity<Object> getAssignment(@PathVariable String assignmentId, @RequestBody(required = false) String requestBody){
+        statsd.incrementCounter("getassignment");
+        if (requestBody != null){
+            logger.error("Cannot get ---- the get request cannot have a request body");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Assignment theAssignment = assignmentService.findById(assignmentId);
         if(theAssignment == null){
+            logger.error("Cannot get ---- " +"assignment id not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         AssignmentVO assignmentVO = new AssignmentVO();
         BeanUtils.copyProperties(theAssignment, assignmentVO);
+        logger.info("Get assignment ---- " + "get assignment by id");
         return new ResponseEntity<>(assignmentVO, HttpStatus.OK);
     }
 
     @PostMapping("/assignments")
     public ResponseEntity<Object> addAssignment(@RequestBody Assignment theAssignment, Authentication authentication){
-        theAssignment.setAssignmentCreated(LocalDateTime.now());
-        theAssignment.setAssignmentUpdated(LocalDateTime.now());
-        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
-        | String.valueOf(theAssignment.getPoints()) == null | String.valueOf(theAssignment.getNumOfAttemps()) == null |
-                theAssignment.getUser() != null){
+        //metrics
+        statsd.incrementCounter("createassignment");
+        //assignment points and number of attemps cannot be double
+        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttemps()) == false){
+            logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        else if(theAssignment.getPoints() <= 10 & theAssignment.getPoints() >= 1 ){
-        String username = authentication.getName();
-        theAssignment.setUser(username);
-        Assignment dbAssignment = assignmentService.save(theAssignment);
-        AssignmentVO assignmentVO = new AssignmentVO();
-        BeanUtils.copyProperties(theAssignment, assignmentVO);
-        return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
+
+        theAssignment.setAssignmentCreated(LocalDateTime.now());
+        theAssignment.setAssignmentUpdated(LocalDateTime.now());
+
+        //id must be null, ddl, name, points, numofattemps must be null
+        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
+        | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+                theAssignment.getUser() != null){
+            logger.error("Cannot create ---- " + "input Assignment body can not be validated");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        //create
+        else if(Integer.valueOf(theAssignment.getPoints()) <= 10 & Integer.valueOf(theAssignment.getPoints()) >= 1){
+            String username = authentication.getName();
+            theAssignment.setUser(username);
+            Assignment dbAssignment = assignmentService.save(theAssignment);
+            AssignmentVO assignmentVO = new AssignmentVO();
+            BeanUtils.copyProperties(theAssignment, assignmentVO);
+            logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
+            return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
+        }
+        logger.error("Cannot create ---- " +"assignment points must between 1 and 10");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId, Authentication authentication){
+        statsd.incrementCounter("updateassignment");
+        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttemps()) == false){
+            logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName() == null
-                | String.valueOf(theAssignment.getPoints()) == null | String.valueOf(theAssignment.getNumOfAttemps()) == null |
-                theAssignment.getUser() != null | theAssignment.getPoints() > 10 |theAssignment.getPoints() < 0){
+                | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+                theAssignment.getUser() != null | Integer.valueOf(theAssignment.getPoints()) > 10 |Integer.valueOf(theAssignment.getPoints()) < 0){
+            logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         else if(!havePermission(authentication.getName(), assignmentId)){
+            logger.error("Cannot create ---- " + "the user does not have permission to update this assignment");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Assignment preAssignment = assignmentService.findById(assignmentId);
         if(preAssignment == null){
+            logger.error("Cannot create ---- " + "cannot update because the assignment does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         theAssignment.setId(preAssignment.getId());
@@ -97,8 +139,8 @@ public class AssignmentController {
         preAssignment.setDeadline(theAssignment.getDeadline());
         preAssignment.setAssignmentUpdated(LocalDateTime.now());
         assignmentService.save(preAssignment);
+        logger.info("Assignment created ---- " +"assignment " + assignmentId + " " + "updated");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
 
     @PatchMapping("/assignments/{assignmentId}")
@@ -108,18 +150,27 @@ public class AssignmentController {
         }catch (BadCredentialsException e){
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
+  
     @DeleteMapping("/assignments/{assignmentId}")
-    public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication){
+    public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication,
+                                                   @RequestBody(required = false) String requestBody){
+        statsd.incrementCounter("deleteassignment");
+        if (requestBody != null){
+            logger.error("Cannot delete ---- the delete request cannot have a request body");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Assignment tempAssignment = assignmentService.findById(assignmentId);
         if(tempAssignment == null){
+            logger.error("Cannot delete ---- the assignment does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if(!havePermission(authentication.getName(), assignmentId)){
+            logger.error("Cannot delete ---- the user does not have permission to update this assignment");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         assignmentService.deleteById(assignmentId);
+        logger.info("Assignment delete ---- "  + "assignment " + assignmentId + " " + "delete");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
 
     public boolean havePermission(String username, String assignID){
@@ -130,5 +181,16 @@ public class AssignmentController {
         }
         return false;
     }
+
+    public boolean isInt(String str){
+        Pattern pattern = Pattern.compile("^\\d+$");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
+    }
+
+
 
 }
