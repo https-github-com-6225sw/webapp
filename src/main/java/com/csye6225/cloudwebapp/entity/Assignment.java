@@ -25,11 +25,11 @@ public class Assignment {
 
     @Column(name="points")
 //    @NotNull
-    private int points;
+    private String points;
 
     @Column(name="num_of_attemps")
 //    @NotNull
-    private int numOfAttemps;
+    private String numOfAttemps;
 
     @Column(name="deadline")
 //    @NotNull
