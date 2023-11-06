@@ -74,19 +74,26 @@ public class AssignmentController {
 
     @PostMapping("/assignments")
     public ResponseEntity<Object> addAssignment(@RequestBody Assignment theAssignment, Authentication authentication){
+        //metrics
         statsd.incrementCounter("createassignment");
-        if(isNumeric(theAssignment.getPoints()) == false |!isNumeric(theAssignment.getNumOfAttemps()) == false){
+        //assignment points and number of attemps cannot be double
+        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttemps()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
         theAssignment.setAssignmentCreated(LocalDateTime.now());
         theAssignment.setAssignmentUpdated(LocalDateTime.now());
+
+        //id must be null, ddl, name, points, numofattemps must be null
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
         | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
                 theAssignment.getUser() != null){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        //create
         else if(Integer.valueOf(theAssignment.getPoints()) <= 10 & Integer.valueOf(theAssignment.getPoints()) >= 1){
             String username = authentication.getName();
             theAssignment.setUser(username);
@@ -96,21 +103,20 @@ public class AssignmentController {
             logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
             return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
         }
-        logger.error("Cannot create ---- " +"assignment points cannot be validate");
+        logger.error("Cannot create ---- " +"assignment points must between 1 and 10");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId, Authentication authentication){
         statsd.incrementCounter("updateassignment");
-        if(isNumeric(theAssignment.getPoints()) == false |!isNumeric(theAssignment.getNumOfAttemps()) == false){
+        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttemps()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName() == null
                 | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
-                theAssignment.getUser() != null | Integer.valueOf(theAssignment.getPoints()) > 10 |Integer.valueOf(theAssignment.getPoints()) < 0
-        | !isNumeric(theAssignment.getPoints())){
+                theAssignment.getUser() != null | Integer.valueOf(theAssignment.getPoints()) > 10 |Integer.valueOf(theAssignment.getPoints()) < 0){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -174,8 +180,8 @@ public class AssignmentController {
         return false;
     }
 
-    public boolean isNumeric(String str){
-        Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
+    public boolean isInt(String str){
+        Pattern pattern = Pattern.compile("^\\d+$");
         Matcher isNum = pattern.matcher(str);
         if (!isNum.matches()) {
             return false;

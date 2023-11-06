@@ -29,6 +29,7 @@ public class Databaseheath {
 
     @GetMapping(value="/")
     public ResponseEntity<String> initPage(){
+        statsd.incrementCounter("rootcontext");
         return new ResponseEntity<>("Web Application on EC2 Instance", HttpStatus.OK);
     }
 
