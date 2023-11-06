@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`users` (
 CREATE TABLE IF NOT EXISTS `csye6225sw`.`assignment` (
                                                          `id` VARCHAR(225) NOT NULL,
                                                          `name` VARCHAR(45) NOT NULL,
-    `points` INT NOT NULL,
-    `num_of_attemps` INT NOT NULL,
+    `points` CHAR(25) NOT NULL,
+    `num_of_attemps` CHAR(25) NOT NULL,
     `deadline` DATETIME NOT NULL,
     `assignment_created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
     `assignment_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
