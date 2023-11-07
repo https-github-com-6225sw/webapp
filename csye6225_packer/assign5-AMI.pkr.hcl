@@ -37,6 +37,7 @@ variable "demo_id"{
   default = "099917940770"
 }
 
+
 source "amazon-ebs" "my-ami" {
   ami_name      = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   region        = "${var.aws_region}"
@@ -110,7 +111,6 @@ build {
       "./csye6225_packer/cloudwatch.sh",
     ]
   }
-
 
 }
 

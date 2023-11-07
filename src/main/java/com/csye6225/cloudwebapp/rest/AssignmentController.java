@@ -41,6 +41,14 @@ public class AssignmentController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
     @Autowired
+    private StatsDClient statsd;
+
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+    @Autowired
     private AssignmentController(AssignmentService theAssignmentService){
         assignmentService = theAssignmentService;
     }
@@ -103,8 +111,29 @@ public class AssignmentController {
             logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
             return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
         }
-        logger.error("Cannot create ---- " +"assignment points must between 1 and 10");
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        theAssignment.setAssignmentCreated(LocalDateTime.now());
+        theAssignment.setAssignmentUpdated(LocalDateTime.now());
+
+        //id must be null, ddl, name, points, numofattemps must be null
+        if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
+        | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+                theAssignment.getUser() != null){
+            logger.error("Cannot create ---- " + "input Assignment body can not be validated");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        //create
+        else if(Integer.valueOf(theAssignment.getPoints()) <= 10 & Integer.valueOf(theAssignment.getPoints()) >= 1){
+            String username = authentication.getName();
+            theAssignment.setUser(username);
+            Assignment dbAssignment = assignmentService.save(theAssignment);
+            AssignmentVO assignmentVO = new AssignmentVO();
+            BeanUtils.copyProperties(theAssignment, assignmentVO);
+            logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
+            return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
+        }
     }
 
     @PutMapping("/assignments/{assignmentId}")
@@ -148,6 +177,7 @@ public class AssignmentController {
         }catch (BadCredentialsException e){
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
+
     @DeleteMapping("/assignments/{assignmentId}")
     public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication,
                                                    @RequestBody(required = false) String requestBody){
