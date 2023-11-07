@@ -41,6 +41,23 @@ public class AssignmentController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
     @Autowired
+    private StatsDClient statsd;
+  
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+
+    @Autowired
+    private StatsDClient statsd;
+
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+    @Autowired
     private AssignmentController(AssignmentService theAssignmentService){
         assignmentService = theAssignmentService;
     }
@@ -148,6 +165,7 @@ public class AssignmentController {
         }catch (BadCredentialsException e){
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }}
+
     @DeleteMapping("/assignments/{assignmentId}")
     public ResponseEntity<String> deleteAssignment(@PathVariable String assignmentId, Authentication authentication,
                                                    @RequestBody(required = false) String requestBody){
@@ -168,7 +186,6 @@ public class AssignmentController {
         assignmentService.deleteById(assignmentId);
         logger.info("Assignment delete ---- "  + "assignment " + assignmentId + " " + "delete");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
 
     public boolean havePermission(String username, String assignID){
