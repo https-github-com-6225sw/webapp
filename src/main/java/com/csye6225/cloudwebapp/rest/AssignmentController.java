@@ -33,7 +33,13 @@ import java.util.regex.Pattern;
 public class AssignmentController {
 
     private AssignmentService assignmentService;
-
+    @Autowired
+    private StatsDClient statsd;
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
     @Autowired
     private StatsDClient statsd;
   
