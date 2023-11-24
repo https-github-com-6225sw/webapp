@@ -21,6 +21,9 @@ jobs:
       DATABASE_URL: ${{vars.DATABASE_URL}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
       DATABASE_USER: ${{vars.DATABASE_USER}}
+      TOPIC_ARN: ${{vars.TOPIC_ARN}}
+      AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+      AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}
 
     steps:
     - uses: actions/checkout@v3
