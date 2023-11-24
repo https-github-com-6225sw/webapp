@@ -1,29 +1,24 @@
 package com.csye6225.cloudwebapp.rest;
 
 import com.csye6225.cloudwebapp.VO.AssignmentVO;
-import com.csye6225.cloudwebapp.dao.AssignmentDao;
 import com.csye6225.cloudwebapp.entity.Assignment;
+import com.csye6225.cloudwebapp.entity.Submission;
 import com.csye6225.cloudwebapp.service.AssignmentService;
+import com.csye6225.cloudwebapp.service.SubmissionService;
 import com.timgroup.statsd.StatsDClient;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +28,7 @@ import java.util.regex.Pattern;
 public class AssignmentController {
 
     private AssignmentService assignmentService;
+
     @Autowired
     private StatsDClient statsd;
     @InitBinder
@@ -122,7 +118,7 @@ public class AssignmentController {
         }
         else if(!havePermission(authentication.getName(), assignmentId)){
             logger.error("Cannot create ---- " + "the user does not have permission to update this assignment");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         Assignment preAssignment = assignmentService.findById(assignmentId);
         if(preAssignment == null){
@@ -137,7 +133,7 @@ public class AssignmentController {
         preAssignment.setDeadline(theAssignment.getDeadline());
         preAssignment.setAssignmentUpdated(LocalDateTime.now());
         assignmentService.save(preAssignment);
-        logger.info("Assignment created ---- " +"assignment " + assignmentId + " " + "updated");
+        logger.info("Assignment updated ---- " +"assignment " + assignmentId + " " + "updated");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -163,13 +159,13 @@ public class AssignmentController {
         }
         if(!havePermission(authentication.getName(), assignmentId)){
             logger.error("Cannot delete ---- the user does not have permission to update this assignment");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         assignmentService.deleteById(assignmentId);
         logger.info("Assignment delete ---- "  + "assignment " + assignmentId + " " + "delete");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
+
 
     public boolean havePermission(String username, String assignID){
         //find creatername by assignID
@@ -188,6 +184,7 @@ public class AssignmentController {
         }
         return true;
     }
+
 
 
 
