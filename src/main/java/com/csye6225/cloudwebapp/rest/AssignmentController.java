@@ -2,9 +2,7 @@ package com.csye6225.cloudwebapp.rest;
 
 import com.csye6225.cloudwebapp.VO.AssignmentVO;
 import com.csye6225.cloudwebapp.entity.Assignment;
-import com.csye6225.cloudwebapp.entity.Submission;
 import com.csye6225.cloudwebapp.service.AssignmentService;
-import com.csye6225.cloudwebapp.service.SubmissionService;
 import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,17 +71,18 @@ public class AssignmentController {
         //metrics
         statsd.incrementCounter("createassignment");
         //assignment points and number of attemps cannot be double
-        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttemps()) == false){
+        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttempts()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         theAssignment.setAssignmentCreated(LocalDateTime.now());
         theAssignment.setAssignmentUpdated(LocalDateTime.now());
+       theAssignment.setAttemptsUsed("0");
 
-        //id must be null, ddl, name, points, numofattemps must be null
+        //id must be null, ddl, name, points, numofattempts must be null
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
-        | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+        | theAssignment.getPoints() == null | theAssignment.getNumOfAttempts() == null |
                 theAssignment.getUser() != null){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -106,12 +105,12 @@ public class AssignmentController {
     @PutMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId, Authentication authentication){
         statsd.incrementCounter("updateassignment");
-        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttemps()) == false){
+        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttempts()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName() == null
-                | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+                | theAssignment.getPoints() == null | theAssignment.getNumOfAttempts() == null |
                 theAssignment.getUser() != null | Integer.valueOf(theAssignment.getPoints()) > 10 |Integer.valueOf(theAssignment.getPoints()) < 0){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -128,7 +127,7 @@ public class AssignmentController {
         theAssignment.setId(preAssignment.getId());
         preAssignment.setPoints(theAssignment.getPoints());
         preAssignment.setName(theAssignment.getName());
-        preAssignment.setNumOfAttemps(theAssignment.getNumOfAttemps());
+        preAssignment.setNumOfAttempts(theAssignment.getNumOfAttempts());
 
         preAssignment.setDeadline(theAssignment.getDeadline());
         preAssignment.setAssignmentUpdated(LocalDateTime.now());

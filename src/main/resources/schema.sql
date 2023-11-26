@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`submission` (
     `submission_date` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
     `assignment_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `id_UNIQUE` (`assignment_id` ASC) VISIBLE,
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
     ENGINE = InnoDB;
 
@@ -60,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`assignment` (
     `assignment_created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
     `assignment_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `users_id` INT NOT NULL,
+    `attempts_used` CHAR(25) NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `fk_assignment_users_idx` (`users_id` ASC) VISIBLE,
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)

@@ -16,8 +16,7 @@ public class Submission {
     @Column(name="id")
     private String id;
 
-    @Column(name="assignment_id",
-            unique = true)
+    @Column(name="assignment_id")
     private String assignment_id;
 
     @Column(name="submission_url")
@@ -31,10 +30,6 @@ public class Submission {
     @UpdateTimestamp
     @Column(name="assignment_updated")
     private LocalDateTime assignment_updated;
-
-    //how many times the user submit the assignment
-    @Column(name="num_of_attemps")
-    private String numOfAttemps;
 
 
 }

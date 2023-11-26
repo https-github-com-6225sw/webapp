@@ -11,7 +11,7 @@ public class AssignmentVO {
     private String id;
     private String name;
     private String points;
-    private String numOfAttemps;
+    private String numOfAttempts;
     private LocalDateTime deadline;
 
     @CreationTimestamp

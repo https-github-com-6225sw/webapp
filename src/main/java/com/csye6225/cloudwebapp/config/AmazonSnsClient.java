@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AmazonSnsClient {
 
-    @Value("${aws.accessKey}")
-    private String accessKey;
-    @Value("${aws.secretKey}")
-    private String secretKey;
+//    @Value("${aws.accessKey}")
+//    private String accessKey;
+//    @Value("${aws.secretKey}")
+//    private String secretKey;
 
     private AmazonSNS client;
 
@@ -23,17 +23,18 @@ public class AmazonSnsClient {
     private void initializeAmazonSnsClient() {
         this.client =
                 AmazonSNSClientBuilder.standard()
-                       .withCredentials(getAwsCredentialProvider())
+//                       .withCredentials(getAwsCredentialProvider())
                         //.withCredentials(new InstanceProfileCredentialsProvider(false))
                         .withRegion(Region.getRegion(Regions.US_EAST_1).getName())
+                        .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
                         .build();
     }
 
-    private AWSCredentialsProvider getAwsCredentialProvider() {
-        AWSCredentials awsCredentials =
-                new BasicAWSCredentials(accessKey, secretKey);
-        return new AWSStaticCredentialsProvider(awsCredentials);
-    }
+//    private AWSCredentialsProvider getAwsCredentialProvider() {
+//        AWSCredentials awsCredentials =
+//                new BasicAWSCredentials(accessKey, secretKey);
+//        return new AWSStaticCredentialsProvider(awsCredentials);
+//    }
 
     public AmazonSNS getClient() {
         return client;

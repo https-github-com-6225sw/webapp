@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.timgroup.statsd.StatsDClient;
 
+import org.aspectj.apache.bcel.classfile.Unknown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.json.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1")
@@ -68,9 +70,14 @@ public class SubmissionController {
         //this assignment must exist
         Assignment preAssignment = assignmentService.findById(id);
 
+        if (LocalDateTime.now().isAfter(preAssignment.getDeadline())){
+            logger.error("Cannot submitted ---- " +"assignment " + id + " " + "exceeds due day");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         if(preAssignment == null){
             logger.error("Cannot submit ---- " + "cannot submit because the assignment does not exist");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         if(!havePermission(authentication.getName(), id)){
@@ -89,7 +96,9 @@ public class SubmissionController {
             newSubmission.setSubmission_url(theURL);
             newSubmission.setSubmission_date(LocalDateTime.now());
             newSubmission.setAssignment_updated(LocalDateTime.now());
-            newSubmission.setNumOfAttemps("1");
+//            newSubmission.setNum_of_attempts("1");
+            preAssignment.setAttemptsUsed("1");
+            assignmentService.save(preAssignment);
             submissionService.save(newSubmission);
 
             SubmissionVO submissionVO = new SubmissionVO();
@@ -98,7 +107,7 @@ public class SubmissionController {
 
             //publish message to topic
             Message message = new Message(authentication.getName(), id, newSubmission.getId(), newSubmission.getSubmission_url(), String.valueOf(newSubmission.getSubmission_date()), String.valueOf(newSubmission.getAssignment_updated()),
-                    newSubmission.getNumOfAttemps());
+                    preAssignment.getAttemptsUsed());
             String jsonMessage = new ObjectMapper().writeValueAsString(message);
 
             publishTopic(jsonMessage, topicArn);
@@ -111,7 +120,7 @@ public class SubmissionController {
 
             //exceeds number of attempts, reject request
             Submission thePreSubmission = preSubmission.get(0);
-            if(thePreSubmission.getNumOfAttemps().equals(preAssignment.getNumOfAttemps())){
+            if(preAssignment.getAttemptsUsed().equals(preAssignment.getNumOfAttempts())){
                 logger.error("Cannot submitted ---- " +"assignment " + id + " " + "exceeds number of attempts");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -124,18 +133,25 @@ public class SubmissionController {
 
             //number of attempts still remains & not pass due date
             else {
-                Integer newAttempts = Integer.valueOf(thePreSubmission.getNumOfAttemps()) + 1;
-                thePreSubmission.setSubmission_url(theURL);
-                thePreSubmission.setNumOfAttemps(String.valueOf(newAttempts));
-                thePreSubmission.setAssignment_updated(LocalDateTime.now());
-                submissionService.save(thePreSubmission);
+                Integer newAttempts = Integer.valueOf(preAssignment.getAttemptsUsed()) + 1;
+                Submission reSubmission = new Submission();
+
+//                reSubmission.setId(UUID.randomUUID().toString());
+                reSubmission.setSubmission_url(theURL);
+                reSubmission.setAssignment_id(thePreSubmission.getAssignment_id());
+                reSubmission.setSubmission_date(LocalDateTime.now());
+                preAssignment.setAttemptsUsed(String.valueOf(newAttempts));
+                reSubmission.setAssignment_updated(LocalDateTime.now());
+                assignmentService.save(preAssignment);
+                submissionService.save(reSubmission);
+
                 SubmissionVO submissionVO = new SubmissionVO();
-                BeanUtils.copyProperties(thePreSubmission, submissionVO);
+                BeanUtils.copyProperties(reSubmission, submissionVO);
                 logger.info("Assignment submitted again  ---- " +"assignment " + id + " " + "submitted");
 
                 //publish message to topic
                 Message message = new Message(authentication.getName(), id, thePreSubmission.getId(), thePreSubmission.getSubmission_url(),
-                        String.valueOf(thePreSubmission.getSubmission_date()), String.valueOf(thePreSubmission.getAssignment_updated()), thePreSubmission.getNumOfAttemps());
+                        String.valueOf(thePreSubmission.getSubmission_date()), String.valueOf(thePreSubmission.getAssignment_updated()), preAssignment.getAttemptsUsed());
                 String jsonMessage = new ObjectMapper().writeValueAsString(message);
 
                 publishTopic(jsonMessage, topicArn);
