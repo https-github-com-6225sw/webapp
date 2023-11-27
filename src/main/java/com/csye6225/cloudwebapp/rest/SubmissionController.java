@@ -112,7 +112,7 @@ public class SubmissionController {
 
             publishTopic(jsonMessage, topicArn);
 
-            return new ResponseEntity<>(submissionVO, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(submissionVO, HttpStatus.CREATED);
         }
 
         //if the assignment have been submitted
@@ -150,13 +150,13 @@ public class SubmissionController {
                 logger.info("Assignment submitted again  ---- " +"assignment " + id + " " + "submitted");
 
                 //publish message to topic
-                Message message = new Message(authentication.getName(), id, thePreSubmission.getId(), thePreSubmission.getSubmission_url(),
-                        String.valueOf(thePreSubmission.getSubmission_date()), String.valueOf(thePreSubmission.getAssignment_updated()), preAssignment.getAttemptsUsed());
+                Message message = new Message(authentication.getName(), id, reSubmission.getId(), reSubmission.getSubmission_url(),
+                        String.valueOf(reSubmission.getSubmission_date()), String.valueOf(reSubmission.getAssignment_updated()), preAssignment.getAttemptsUsed());
                 String jsonMessage = new ObjectMapper().writeValueAsString(message);
 
                 publishTopic(jsonMessage, topicArn);
 
-                return new ResponseEntity<>(submissionVO,HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(submissionVO,HttpStatus.CREATED);
             }
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -172,18 +172,6 @@ public class SubmissionController {
         return false;
     }
 
-//    public void listSNSTopics() {
-//        try {
-//            ListTopicsRequest request = new ListTopicsRequest();
-//
-//            ListTopicsResult result = amazonSnsClient.getClient().listTopics(request);
-//            System.out.println("Topics are " + result.getTopics());
-//
-//        } catch (Exception e) {
-//            System.err.println(e.getMessage());
-//        }
-//    }
-//
     public void publishTopic(String message, String topicArn) {
 
         try {
