@@ -26,8 +26,10 @@ import javax.sql.DataSource;
 import java.io.IOException;
 
 
+
 @Configuration
 public class SecurityConfiguration {
+
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -62,5 +64,4 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable());
         return http.build();
     }
-
 }
