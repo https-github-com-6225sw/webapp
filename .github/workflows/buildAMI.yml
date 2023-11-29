@@ -1,7 +1,7 @@
 name: Build Packer AMI
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "assignment9_5" ]
 
 jobs:
   build-and-test:
