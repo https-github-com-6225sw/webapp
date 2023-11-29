@@ -89,7 +89,8 @@ public class AssignmentController {
         }
 
         //create
-        else if(Integer.valueOf(theAssignment.getPoints()) <= 10 & Integer.valueOf(theAssignment.getPoints()) >= 1){
+        else if(Integer.valueOf(theAssignment.getPoints()) <= 100 & Integer.valueOf(theAssignment.getPoints()) >= 1
+        & Integer.valueOf(theAssignment.getPoints()) <= 100 & Integer.valueOf(theAssignment.getPoints()) >=1){
             String username = authentication.getName();
             theAssignment.setUser(username);
             Assignment dbAssignment = assignmentService.save(theAssignment);
@@ -98,7 +99,7 @@ public class AssignmentController {
             logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
             return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
         }
-        logger.error("Cannot create ---- " +"assignment points must between 1 and 10");
+        logger.error("Cannot create ---- " +"assignment points must between 1 and 100");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 

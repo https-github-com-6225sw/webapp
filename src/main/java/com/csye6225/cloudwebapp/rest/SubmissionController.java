@@ -61,29 +61,37 @@ public class SubmissionController {
     Logger logger = LoggerFactory.getLogger(SubmissionController.class);
 
     @PostMapping("/assignments/{id}/submission")
-    public ResponseEntity<Object> submitAssignment(@PathVariable String id, @RequestBody String url, Authentication authentication) throws JsonProcessingException {
+    public ResponseEntity<Object> submitAssignment(@PathVariable String id, @RequestBody(required = false) String url, Authentication authentication) throws JsonProcessingException {
         statsd.incrementCounter("submitassignment");
+
+        if(url == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         JSONObject json = new JSONObject(url);
         String theURL = json.getString("submission_url");
+
+        if (theURL.trim().length() == 0){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         //this assignment must exist
         Assignment preAssignment = assignmentService.findById(id);
 
         if (LocalDateTime.now().isAfter(preAssignment.getDeadline())){
             logger.error("Cannot submitted ---- " +"assignment " + id + " " + "exceeds due day");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         if(preAssignment == null){
             logger.error("Cannot submit ---- " + "cannot submit because the assignment does not exist");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        if(!havePermission(authentication.getName(), id)){
-            logger.info("Cannot submit ---- the user does not have permission to submit this assignment");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+
+//        if(!havePermission(authentication.getName(), id)){
+//            logger.info("Cannot submit ---- the user does not have permission to submit this assignment");
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//        }
 
         //determine if this assignment have been submitted
         List<Submission> preSubmission = submissionService.findByAssignmentId(id);
@@ -106,7 +114,7 @@ public class SubmissionController {
             logger.info("Assignment submitted ---- " +"assignment " + id + " " + "submitted");
 
             //publish message to topic
-            Message message = new Message(authentication.getName(), id, newSubmission.getId(), newSubmission.getSubmission_url(), String.valueOf(newSubmission.getSubmission_date()), String.valueOf(newSubmission.getAssignment_updated()),
+            Message message = new Message(authentication.getName(), id, preAssignment.getName(), newSubmission.getId(), newSubmission.getSubmission_url(), String.valueOf(newSubmission.getSubmission_date()), String.valueOf(newSubmission.getAssignment_updated()),
                     preAssignment.getAttemptsUsed());
             String jsonMessage = new ObjectMapper().writeValueAsString(message);
 
@@ -122,13 +130,13 @@ public class SubmissionController {
             Submission thePreSubmission = preSubmission.get(0);
             if(preAssignment.getAttemptsUsed().equals(preAssignment.getNumOfAttempts())){
                 logger.error("Cannot submitted ---- " +"assignment " + id + " " + "exceeds number of attempts");
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
             //exceeds due date, reject request
             else if (LocalDateTime.now().isAfter(preAssignment.getDeadline())){
                 logger.error("Cannot submitted ---- " +"assignment " + id + " " + "exceeds due day");
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
             //number of attempts still remains & not pass due date
@@ -150,7 +158,7 @@ public class SubmissionController {
                 logger.info("Assignment submitted again  ---- " +"assignment " + id + " " + "submitted");
 
                 //publish message to topic
-                Message message = new Message(authentication.getName(), id, reSubmission.getId(), reSubmission.getSubmission_url(),
+                Message message = new Message(authentication.getName(), id,  preAssignment.getName(),reSubmission.getId(), reSubmission.getSubmission_url(),
                         String.valueOf(reSubmission.getSubmission_date()), String.valueOf(reSubmission.getAssignment_updated()), preAssignment.getAttemptsUsed());
                 String jsonMessage = new ObjectMapper().writeValueAsString(message);
 
