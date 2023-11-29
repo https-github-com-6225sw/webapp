@@ -35,6 +35,19 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`users` (
 
 
 -- -----------------------------------------------------
+-- Table `mydb`.`assignmentSubmission`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `csye6225sw`.`submission` (
+                                                    `id` VARCHAR(225) NOT NULL,
+                                                    `assignment_id` VARCHAR(225) NOT NULL,
+    `submission_url` VARCHAR(225) NOT NULL,
+    `submission_date` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+    `assignment_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+    ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `csye62252`.`assignment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `csye6225sw`.`assignment` (
@@ -46,6 +59,7 @@ CREATE TABLE IF NOT EXISTS `csye6225sw`.`assignment` (
     `assignment_created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
     `assignment_updated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `users_id` INT NOT NULL,
+    `attempts_used` CHAR(25) NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `fk_assignment_users_idx` (`users_id` ASC) VISIBLE,
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
