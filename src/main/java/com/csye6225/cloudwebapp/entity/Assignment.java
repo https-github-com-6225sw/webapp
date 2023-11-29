@@ -27,9 +27,10 @@ public class Assignment {
 //    @NotNull
     private String points;
 
-    @Column(name="num_of_attemps")
+    @Column(name="num_of_attempts")
 //    @NotNull
-    private String numOfAttemps;
+    private String numOfAttempts;
+
 
     @Column(name="deadline")
 //    @NotNull
@@ -48,6 +49,11 @@ public class Assignment {
 //                          CascadeType.DETACH, CascadeType.REFRESH})
     @Column(name="user_id")
     private String user;
+
+    @Column(name="attempts_used")
+    private String attemptsUsed;
+
+
 
 
 

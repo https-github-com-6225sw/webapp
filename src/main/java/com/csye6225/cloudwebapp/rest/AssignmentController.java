@@ -1,29 +1,22 @@
 package com.csye6225.cloudwebapp.rest;
 
 import com.csye6225.cloudwebapp.VO.AssignmentVO;
-import com.csye6225.cloudwebapp.dao.AssignmentDao;
 import com.csye6225.cloudwebapp.entity.Assignment;
 import com.csye6225.cloudwebapp.service.AssignmentService;
 import com.timgroup.statsd.StatsDClient;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +26,7 @@ import java.util.regex.Pattern;
 public class AssignmentController {
 
     private AssignmentService assignmentService;
+
     @Autowired
     private StatsDClient statsd;
     @InitBinder
@@ -77,24 +71,26 @@ public class AssignmentController {
         //metrics
         statsd.incrementCounter("createassignment");
         //assignment points and number of attemps cannot be double
-        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttemps()) == false){
+        if(this.isInt(theAssignment.getPoints()) == false | this.isInt(theAssignment.getNumOfAttempts()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         theAssignment.setAssignmentCreated(LocalDateTime.now());
         theAssignment.setAssignmentUpdated(LocalDateTime.now());
+       theAssignment.setAttemptsUsed("0");
 
-        //id must be null, ddl, name, points, numofattemps must be null
+        //id must be null, ddl, name, points, numofattempts must be null
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName().isEmpty()|theAssignment.getName().length() == 0
-        | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+        | theAssignment.getPoints() == null | theAssignment.getNumOfAttempts() == null |
                 theAssignment.getUser() != null){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         //create
-        else if(Integer.valueOf(theAssignment.getPoints()) <= 10 & Integer.valueOf(theAssignment.getPoints()) >= 1){
+        else if(Integer.valueOf(theAssignment.getPoints()) <= 100 & Integer.valueOf(theAssignment.getPoints()) >= 1
+        & Integer.valueOf(theAssignment.getPoints()) <= 100 & Integer.valueOf(theAssignment.getPoints()) >=1){
             String username = authentication.getName();
             theAssignment.setUser(username);
             Assignment dbAssignment = assignmentService.save(theAssignment);
@@ -103,26 +99,26 @@ public class AssignmentController {
             logger.info("Assignment created ---- " +"assignment " + dbAssignment.getId() + " " + "created");
             return new ResponseEntity<>(assignmentVO, HttpStatus.CREATED);
         }
-        logger.error("Cannot create ---- " +"assignment points must between 1 and 10");
+        logger.error("Cannot create ---- " +"assignment points must between 1 and 100");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/assignments/{assignmentId}")
     public ResponseEntity<Object> updateAssignment(@RequestBody Assignment theAssignment, @PathVariable String assignmentId, Authentication authentication){
         statsd.incrementCounter("updateassignment");
-        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttemps()) == false){
+        if(isInt(theAssignment.getPoints()) == false | isInt(theAssignment.getNumOfAttempts()) == false){
             logger.error("Cannot create ---- " + "input point or number of attempts can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if(theAssignment.getId() != null | theAssignment.getDeadline() == null | theAssignment.getName() == null
-                | theAssignment.getPoints() == null | theAssignment.getNumOfAttemps() == null |
+                | theAssignment.getPoints() == null | theAssignment.getNumOfAttempts() == null |
                 theAssignment.getUser() != null | Integer.valueOf(theAssignment.getPoints()) > 10 |Integer.valueOf(theAssignment.getPoints()) < 0){
             logger.error("Cannot create ---- " + "input Assignment body can not be validated");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         else if(!havePermission(authentication.getName(), assignmentId)){
             logger.error("Cannot create ---- " + "the user does not have permission to update this assignment");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         Assignment preAssignment = assignmentService.findById(assignmentId);
         if(preAssignment == null){
@@ -132,12 +128,12 @@ public class AssignmentController {
         theAssignment.setId(preAssignment.getId());
         preAssignment.setPoints(theAssignment.getPoints());
         preAssignment.setName(theAssignment.getName());
-        preAssignment.setNumOfAttemps(theAssignment.getNumOfAttemps());
+        preAssignment.setNumOfAttempts(theAssignment.getNumOfAttempts());
 
         preAssignment.setDeadline(theAssignment.getDeadline());
         preAssignment.setAssignmentUpdated(LocalDateTime.now());
         assignmentService.save(preAssignment);
-        logger.info("Assignment created ---- " +"assignment " + assignmentId + " " + "updated");
+        logger.info("Assignment updated ---- " +"assignment " + assignmentId + " " + "updated");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -163,13 +159,13 @@ public class AssignmentController {
         }
         if(!havePermission(authentication.getName(), assignmentId)){
             logger.error("Cannot delete ---- the user does not have permission to update this assignment");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         assignmentService.deleteById(assignmentId);
         logger.info("Assignment delete ---- "  + "assignment " + assignmentId + " " + "delete");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
+
 
     public boolean havePermission(String username, String assignID){
         //find creatername by assignID
@@ -188,6 +184,7 @@ public class AssignmentController {
         }
         return true;
     }
+
 
 
 
