@@ -7,16 +7,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Data
-public class AssignmentVO {
+public class SubmissionVO {
     private String id;
-    private String name;
-    private String points;
-    private String numOfAttempts;
-    private LocalDateTime deadline;
-
+    private String assignment_id;
+    private String submission_url;
     @CreationTimestamp
-    private LocalDateTime assignmentCreated;
-
+    private LocalDateTime submission_date;
     @UpdateTimestamp
-    private LocalDateTime assignmentUpdated;
+    private LocalDateTime assignment_updated;
 }
