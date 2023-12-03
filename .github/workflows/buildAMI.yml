@@ -116,7 +116,7 @@ jobs:
       run: |
         aws autoscaling update-auto-scaling-group \
             --auto-scaling-group-name CSYE6225_auto_scaling	\
-            --launch-template LaunchTemplateName=CSYE6225_auto_scaling,Version='$Latest'
+            --launch-template LaunchTemplateName=CSYE6225_lauch_temp,Version='$Latest'
     - name: Refresh Instance
       run: |
         aws autoscaling start-instance-refresh --auto-scaling-group-name CSYE6225_auto_scaling
