@@ -4,7 +4,7 @@
 ## Requirements
 
 For building and running the application you need:
-
+test
 - [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [Maven 3](https://maven.apache.org)
 
@@ -15,6 +15,7 @@ There are several ways to run a Spring Boot application on your local machine. O
 
 Alternatively you can use the [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html) like so:
 
+test
 ```shell
 mvn spring-boot:run
 ```
