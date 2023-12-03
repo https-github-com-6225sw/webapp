@@ -50,12 +50,12 @@ public class SecurityConfiguration {
                         "/v3/api-docs/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v4/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE,"/v4/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/v4/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/v4/assignments").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/v4/assignments/{id}/submission").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/v4/assignments/**").permitAll());
+                        .requestMatchers(HttpMethod.GET, "/v1/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v1/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/assignments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/assignments/{id}/submission").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").permitAll());
 
        // http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
