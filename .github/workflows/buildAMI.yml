@@ -1,7 +1,7 @@
 name: Build Packer AMI
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "assignment_10" ]
 
 jobs:
   build-and-test:
@@ -50,6 +50,10 @@ jobs:
       with:
         name: webappArtifact
         path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
+    - name: Install Jq
+      uses: sergeysova/jq-action@v2
+      with:
+        cmd: jq -n env
 
   packer:
     needs: build-and-test
@@ -85,7 +89,38 @@ jobs:
       
     - name: Build Artifact
       run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
-  
+
+    - name: Get version from manifest.json
+      uses: sergeysova/jq-action@v2
+      id: ami
+      with:
+        cmd: jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2
+    - name: Commit message to git env
+      run: echo "ami=${{steps.ami.outputs.value}}" >> $GITHUB_ENV
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}
+        aws-region: us-east-1
+
+    - name: Create a new Launch template
+      run: |
+        aws ec2 create-launch-template-version \
+            --launch-template-name CSYE6225_lauch_temp \
+            --version-description CSYE6225_lauch_temp \
+            --source-version default \
+            --launch-template-data "ImageId=${{env.ami}}"
+    - name: Use lastest version of launch template to update autoscaling group
+      run: |
+        aws autoscaling update-auto-scaling-group \
+            --auto-scaling-group-name CSYE6225_auto_scaling	\
+            --launch-template LaunchTemplateName=CSYE6225_auto_scaling,Version='$Latest'
+    - name: Refresh Instance
+      run: |
+        aws autoscaling start-instance-refresh --auto-scaling-group-name CSYE6225_auto_scaling
+
 
   
 
