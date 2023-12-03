@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.io.IOException;
 
-
-
 @Configuration
 public class SecurityConfiguration {
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
