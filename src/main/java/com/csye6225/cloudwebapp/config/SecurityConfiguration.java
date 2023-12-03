@@ -26,10 +26,8 @@ import javax.sql.DataSource;
 import java.io.IOException;
 
 
-
 @Configuration
 public class SecurityConfiguration {
-
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
 

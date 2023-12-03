@@ -85,9 +85,51 @@ jobs:
       
     - name: Build Artifact
       run: "packer build -color=true ./csye6225_packer/assign5-AMI.pkr.hcl"
-  
 
-  
+    - name: Get version from manifest.json
+      uses: sergeysova/jq-action@v2
+      id: ami
+      with:
+        cmd: jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2
+    - name: Commit message to git env
+      run: echo "AMI_ID=${{steps.ami.outputs.value}}" >> $GITHUB_ENV
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}
+        aws-region: us-east-1
+
+    - name: Create a new Launch template
+      run: |
+        aws ec2 create-launch-template-version \
+            --launch-template-name CSYE6225_lauch_temp \
+            --version-description CSYE6225_lauch_temp \
+            --source-version 1 \
+            --launch-template-data "ImageId=${{env.AMI_ID}}"
+    - name: Use lastest version of launch template to update autoscaling group
+      run: |
+        aws autoscaling update-auto-scaling-group \
+            --auto-scaling-group-name CSYE6225_auto_scaling	\
+            --launch-template LaunchTemplateName=CSYE6225_lauch_temp,Version='$Latest'
+    - name: Refresh Instance
+      run: |
+        aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name CSYE6225_auto_scaling
+
+    - name: Wait for Instance Refresh Completion
+      run: |
+        while true; do
+          status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name CSYE6225_auto_scaling --instance-refresh-ids ${{env.REFRESH_ID}} --query 'InstanceRefreshes[0].Status' --output text)
+          echo "Current status: $status"
+          if [[ $status == "Successful" ]]; then
+            echo "Instance refresh completed successfully."
+            exit 0
+          elif [[ $status == "Failed" || $status == "Cancelled" ]]; then
+            echo "Instance refresh failed."
+            exit 1
+          fi
+          sleep 60
+        done
  
-    

@@ -45,7 +45,7 @@ public class CloudwebappApplication {
         logger.info("\n#################Application running####################\n");
         try {
             String csvFilePath = "/opt/users.csv";
-            //String csvFilePath = "/usr/local/opt/users.csv";
+//            String csvFilePath = "/usr/local/opt/users.csv";
             Connection conn = dataSource.getConnection();
             BufferedReader lineReader = new BufferedReader(new FileReader(csvFilePath));
             String lineText = null;
