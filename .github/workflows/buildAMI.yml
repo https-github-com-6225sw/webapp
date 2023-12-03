@@ -50,10 +50,10 @@ jobs:
       with:
         name: webappArtifact
         path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
-    - name: Install Jq
-      uses: sergeysova/jq-action@v2
-      with:
-        cmd: jq -n env
+#    - name: Install Jq
+#      uses: sergeysova/jq-action@v2
+#      with:
+#        cmd: jq -n env
 
   packer:
     needs: build-and-test
