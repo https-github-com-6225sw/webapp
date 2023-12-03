@@ -116,10 +116,8 @@ jobs:
             --launch-template LaunchTemplateName=CSYE6225_lauch_temp,Version='$Latest'
     - name: Refresh Instance
       run: |
-        refresh_id = $(aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name CSYE6225_auto_scaling \
-            --query 'InstanceRefreshId' --output text)
-        echo "REFRESH_ID=$refresh_id" >> $GITHUB_ENV
+        aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name CSYE6225_auto_scaling
 
     - name: Wait for Instance Refresh Completion
       run: |

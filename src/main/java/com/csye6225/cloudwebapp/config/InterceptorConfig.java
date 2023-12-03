@@ -14,7 +14,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ParamInterceptor())
-                .addPathPatterns("/healthz", "/v3/**", "/v3/**/**");
+                .addPathPatterns("/healthz", "/v4/**", "/v4/**/**");
         //.excludePathPatterns("");
       
         registry.addInterceptor(new BodyInterceptor())

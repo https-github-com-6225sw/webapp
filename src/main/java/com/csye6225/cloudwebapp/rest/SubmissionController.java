@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v3")
+@RequestMapping("/v4")
 public class SubmissionController {
 
     @Value("${sns.topic.arn}")
