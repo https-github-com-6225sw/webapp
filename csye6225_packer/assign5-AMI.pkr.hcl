@@ -118,7 +118,5 @@ build {
       my_custom_data = "example"
     }
   }
-
-
 }
 
