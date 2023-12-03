@@ -107,8 +107,8 @@ jobs:
         aws ec2 create-launch-template-version \
             --launch-template-name CSYE6225_lauch_temp \
             --version-description CSYE6225_lauch_temp \
-            --source-version $Default \
-            --launch-template-data "ImageId=${AMI_ID}"
+            --source-version 1 \
+            --launch-template-data "ImageId=${{env.AMI_ID}}"
     - name: Use lastest version of launch template to update autoscaling group
       run: |
         aws autoscaling update-auto-scaling-group \
