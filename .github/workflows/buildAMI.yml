@@ -96,7 +96,7 @@ jobs:
       with:
         cmd: jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2
     - name: Commit message to git env
-      run: echo "ami=${{steps.ami.outputs.value}}" >> $GITHUB_ENV
+      run: echo "AMI_ID=${{steps.ami.outputs.value}}" >> $GITHUB_ENV
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -111,7 +111,7 @@ jobs:
             --launch-template-name CSYE6225_lauch_temp \
             --version-description CSYE6225_lauch_temp \
             --source-version default \
-            --launch-template-data "ImageId=${{env.ami}}"
+            --launch-template-data "ImageId=${AMI_ID}"
     - name: Use lastest version of launch template to update autoscaling group
       run: |
         aws autoscaling update-auto-scaling-group \
