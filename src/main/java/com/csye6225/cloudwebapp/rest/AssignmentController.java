@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v2")
 public class AssignmentController {
 
     private AssignmentService assignmentService;

@@ -50,16 +50,18 @@ public class SecurityConfiguration {
                         "/v3/api-docs/**").permitAll());
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/v1/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE,"/v1/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/v1/assignments/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/v1/assignments").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/v1/assignments/{id}/submission").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/v1/assignments/**").permitAll());
+                        .requestMatchers(HttpMethod.GET, "/v2/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/v2/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v2/assignments/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v2/assignments").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v2/assignments/{id}/submission").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/v2/assignments/**").permitAll());
+
 
        // http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
         return http.build();
     }
+
 }

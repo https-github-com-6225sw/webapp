@@ -51,6 +51,7 @@ jobs:
         name: webappArtifact
         path: ./target/cloudwebapp-0.0.1-SNAPSHOT.jar
 
+
   packer:
     needs: build-and-test
     name: Build AMI
@@ -132,4 +133,4 @@ jobs:
           fi
           sleep 60
         done
- 
+
