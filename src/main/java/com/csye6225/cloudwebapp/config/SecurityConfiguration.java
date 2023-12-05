@@ -57,6 +57,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/v2/assignments/{id}/submission").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/v2/assignments/**").permitAll());
 
+
        // http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
